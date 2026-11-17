@@ -14,9 +14,9 @@ import sys
 from io import BytesIO
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-SRC = ROOT / "public" / "index.html"
-LOGO = ROOT / "public" / "assets" / "logo-alpha.png"
-DEST = pathlib.Path.home() / "harperlinks-ghl" / "PASTE-INTO-GHL.html"
+SRC = ROOT / "index.html"
+LOGO = ROOT / "assets" / "logo-alpha.png"
+DEST = ROOT / "ghl" / "PASTE-INTO-GHL.html"
 
 GHL_RESET = """
 /* ---------- GoHighLevel container reset (keep this at the top) ---------- */
