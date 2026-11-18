@@ -554,7 +554,7 @@
           <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>CRM with pipeline &amp; follow-ups</li>
           <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Clash-checked appointment calendar</li>
         </ul>
-        <a class="price-cta" href="#launch">Start with Professional</a>
+        <a class="price-cta" data-plan="professional" href="#launch">Start with Professional</a>
       </div>
       <div class="price-card featured reveal d2">
         <div class="price-badge">Most popular</div>
@@ -570,7 +570,7 @@
           <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Full analytics, every channel</li>
           <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Everything in Professional</li>
         </ul>
-        <a class="price-cta" href="#launch">Start with Business</a>
+        <a class="price-cta" data-plan="business" href="#launch">Start with Business</a>
       </div>
       <div class="price-card reveal d3">
         <div class="price-name">Enterprise</div>
@@ -584,10 +584,10 @@
           <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Custom workflows built for you</li>
           <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Everything in Business</li>
         </ul>
-        <a class="price-cta" href="#launch">Talk to us</a>
+        <a class="price-cta" data-plan="enterprise" href="#launch">Talk to us</a>
       </div>
     </div>
-    <div class="price-note reveal d3"><b>Early access:</b> everything is free while we build — founding members keep their plan price locked for life.</div>
+    <div class="price-note reveal d3"><b>Done for you:</b> pay today and the HarperLinks team personally builds your account — brand voice, socials, the lot — and hands it over within 7 days. We’ll reach out on WhatsApp or email to get started.</div>
   </div>
 </section>
 
@@ -678,6 +678,42 @@
                              https://api.leadconnectorhq.com/widget/booking/XXXX
      ==================================================================== */
   var CTA_URL = "";
+
+  /* ====================== STRIPE PAYMENT LINKS ========================
+     Create one Payment Link per plan in Stripe (Products → Payment links),
+     paste them here, and the three pricing buttons become real checkouts.
+     Leave one empty and that button falls back to scrolling to sign-up.
+     In each link's settings, set the confirmation page to this site's URL
+     with ?paid=1 on the end — buyers come back to a clear "what happens
+     next" message instead of a dead end.
+     ==================================================================== */
+  var STRIPE_LINKS = {
+    professional: "",   // A$249/mo
+    business:     "",   // A$499/mo
+    enterprise:   "",   // A$999/mo
+  };
+  (function(){
+    document.querySelectorAll('a.price-cta[data-plan]').forEach(function(a){
+      var url = (STRIPE_LINKS[a.dataset.plan] || "").trim();
+      if(!url) return; // stays pointing at #launch until a link is pasted
+      a.setAttribute('href', url);
+      a.setAttribute('target','_blank');
+      a.setAttribute('rel','noopener');
+    });
+    // Back from Stripe with ?paid=1 → say exactly what happens next.
+    if(/[?&]paid=1\b/.test(location.search)){
+      var b = document.createElement('div');
+      b.setAttribute('role','status');
+      b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:2000;padding:14px 20px;text-align:center;'+
+        'font-size:14.5px;line-height:1.5;color:#fff;background:linear-gradient(100deg,#0A84FF,#FF2D92);'+
+        'box-shadow:0 6px 30px rgba(0,0,0,.35)';
+      b.innerHTML = '<b>Payment received — welcome to HarperLinks!</b> ' +
+        'We\'ll reach out on WhatsApp or email within a day or two, and your fully set-up account will be in your hands within 7 days. ' +
+        '<a href="#" style="color:#fff;text-decoration:underline;margin-left:10px" onclick="this.parentNode.remove();return false">Dismiss</a>';
+      document.body.appendChild(b);
+    }
+  })();
+
   (function(){
     var url = (CTA_URL && CTA_URL.trim()) ? CTA_URL.trim() : null;
     var btns = document.querySelectorAll('a[href="#launch"]');
@@ -815,6 +851,114 @@
       });
     });
   }
+})();
+</script>
+
+<!-- ======================= ASK HARPERLINKS (AI agent) =======================
+     A floating assistant that answers visitor questions — pricing, what the
+     product does, how the 7-day setup works. It talks to the HarperLinks
+     server's public sales endpoint; set AGENT_URL to wherever the dashboard
+     server lives. If the server can't be reached the bubble simply hides,
+     so the site never shows a broken chat. -->
+<style>
+  .hw-fab{position:fixed;right:22px;bottom:22px;z-index:1500;width:58px;height:58px;border-radius:50%;border:none;cursor:pointer;
+    background:linear-gradient(120deg,#0A84FF,#FF2D92);color:#fff;display:none;align-items:center;justify-content:center;
+    box-shadow:0 10px 34px rgba(10,132,255,.45);transition:transform .2s}
+  .hw-fab:hover{transform:translateY(-2px) scale(1.04)}
+  .hw-fab svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .hw-panel{position:fixed;right:22px;bottom:92px;z-index:1500;width:min(360px,calc(100vw - 32px));max-height:min(520px,70vh);
+    display:none;flex-direction:column;background:#101322;border:1px solid rgba(255,255,255,.12);border-radius:18px;overflow:hidden;
+    box-shadow:0 24px 70px rgba(0,0,0,.55)}
+  .hw-panel.open{display:flex}
+  .hw-head{padding:13px 16px;background:linear-gradient(100deg,rgba(10,132,255,.18),rgba(255,45,146,.14));
+    border-bottom:1px solid rgba(255,255,255,.08);font-weight:700;font-size:14.5px;color:#EDEFF5;display:flex;justify-content:space-between;align-items:center}
+  .hw-head button{background:none;border:none;color:#8A8F9C;font-size:19px;cursor:pointer;line-height:1}
+  .hw-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;min-height:180px}
+  .hw-m{max-width:85%;padding:9px 13px;border-radius:13px;font-size:13.5px;line-height:1.5;color:#EDEFF5;white-space:pre-wrap}
+  .hw-m.bot{align-self:flex-start;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-bottom-left-radius:5px}
+  .hw-m.user{align-self:flex-end;background:linear-gradient(120deg,#0A84FF,#3E6FF6);border-bottom-right-radius:5px}
+  .hw-m.wait{color:#8A8F9C;font-style:italic}
+  .hw-form{display:flex;gap:8px;padding:11px;border-top:1px solid rgba(255,255,255,.08)}
+  .hw-form input{flex:1;padding:10px 13px;border-radius:11px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);
+    color:#EDEFF5;font-size:13.5px;outline:none}
+  .hw-form input:focus{border-color:#0A84FF}
+  .hw-form button{padding:10px 15px;border:none;border-radius:11px;cursor:pointer;font-weight:700;color:#fff;
+    background:linear-gradient(120deg,#0A84FF,#FF2D92);font-size:13.5px}
+  @media(prefers-reduced-motion:reduce){.hw-fab{transition:none}}
+</style>
+
+<button class="hw-fab" id="hwFab" aria-label="Chat with the HarperLinks assistant">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-8 8H5l-2 2V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z"/></svg>
+</button>
+<div class="hw-panel" id="hwPanel" role="dialog" aria-label="HarperLinks assistant">
+  <div class="hw-head">Ask HarperLinks <button id="hwClose" aria-label="Close chat">×</button></div>
+  <div class="hw-msgs" id="hwMsgs"></div>
+  <form class="hw-form" id="hwForm">
+    <input id="hwInput" type="text" placeholder="What would you like to know?" maxlength="500" autocomplete="off" />
+    <button type="submit">Ask</button>
+  </form>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  /* Where the HarperLinks server lives. Local dev: the dashboard on :4700.
+     After deploying, point this at the server's public address. */
+  var AGENT_URL = "http://localhost:4700";
+
+  var fab = document.getElementById('hwFab'), panel = document.getElementById('hwPanel');
+  var msgs = document.getElementById('hwMsgs'), form = document.getElementById('hwForm'), input = document.getElementById('hwInput');
+
+  // a stable anonymous id so the agent can follow the conversation
+  var vid;
+  try {
+    vid = localStorage.getItem('hw-vid');
+    if(!vid){ vid = 'v-' + Math.random().toString(36).slice(2,12); localStorage.setItem('hw-vid', vid); }
+  } catch(e){ vid = 'v-' + Math.random().toString(36).slice(2,12); }
+
+  function add(kind, text){
+    var el = document.createElement('div');
+    el.className = 'hw-m ' + kind;
+    el.textContent = text;
+    msgs.appendChild(el);
+    msgs.scrollTop = msgs.scrollHeight;
+    return el;
+  }
+
+  // Only show the bubble if the assistant is actually reachable —
+  // a chat that can't answer is worse than no chat.
+  fetch(AGENT_URL + '/api/public/ask', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ visitorId: vid, message: '' })
+  }).then(function(r){ if(r.ok) fab.style.display = 'flex'; }).catch(function(){ /* stay hidden */ });
+
+  var greeted = false;
+  fab.addEventListener('click', function(){
+    panel.classList.toggle('open');
+    if(panel.classList.contains('open')){
+      if(!greeted){ add('bot', "G'day! Ask me anything about HarperLinks — pricing, what your AI team can do, or how the 7-day setup works."); greeted = true; }
+      input.focus();
+    }
+  });
+  document.getElementById('hwClose').addEventListener('click', function(){ panel.classList.remove('open'); });
+
+  var busy = false;
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var text = input.value.trim();
+    if(!text || busy) return;
+    busy = true;
+    add('user', text);
+    input.value = '';
+    var wait = add('bot wait', 'Thinking…');
+    fetch(AGENT_URL + '/api/public/ask', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ visitorId: vid, message: text })
+    }).then(function(r){ return r.json(); })
+      .then(function(d){ wait.remove(); add('bot', d.reply || d.error || "Hmm, try that again?"); })
+      .catch(function(){ wait.remove(); add('bot', "I lost my connection — give it another go in a moment."); })
+      .then(function(){ busy = false; input.focus(); });
+  });
 })();
 </script>
 
