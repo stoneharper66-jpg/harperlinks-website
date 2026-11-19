@@ -924,6 +924,22 @@
   .hw-form input:focus{border-color:#0A6DD8;box-shadow:0 0 0 3px rgba(10,109,216,.1)}
   .hw-form button{padding:10px 15px;border:none;border-radius:11px;cursor:pointer;font-weight:700;color:#fff;
     background:linear-gradient(120deg,#0A6DD8,#D81B72);font-size:13.5px}
+  .hw-think{align-self:flex-start;max-width:92%;border:1px solid rgba(91,82,224,.25);background:rgba(91,82,224,.06);
+    border-radius:13px;padding:9px 12px}
+  .hw-think.settled{background:#F6F8FC;border-color:rgba(14,17,22,.1)}
+  .hw-th{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:600;color:var(--muted)}
+  .hw-th i{width:5px;height:5px;border-radius:50%;background:#D81B72;display:inline-block;animation:hwTdot 1.2s ease-in-out infinite}
+  .hw-th i:nth-child(2){animation-delay:.15s}.hw-th i:nth-child(3){animation-delay:.3s}
+  @keyframes hwTdot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+  .hw-steps{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+  .hw-step{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted)}
+  .hw-step.pending{color:var(--dim)}
+  .hw-step .ok{color:#17A673;font-weight:700}
+  .hw-step .bad{color:#B7791F;font-weight:700}
+  .hw-spin{width:10px;height:10px;border-radius:50%;flex:none;border:1.5px solid rgba(14,17,22,.15);border-top-color:#D81B72;animation:hwSpin .7s linear infinite}
+  @keyframes hwSpin{to{transform:rotate(360deg)}}
+  .hw-owner{font-size:10.5px;font-weight:700;letter-spacing:.06em;color:#17A673;background:rgba(23,166,115,.1);
+    border:1px solid rgba(23,166,115,.3);padding:3px 9px;border-radius:99px;margin-left:8px;vertical-align:1px}
   @media(prefers-reduced-motion:reduce){
     .hw-fab,.hw-fab .px-bot,.hw-fab .px-arm,.hw-fab .px-u,.hw-fab::after,.hw-panel{animation:none!important;transition:none!important}
   }
@@ -997,6 +1013,52 @@
     fab.innerHTML='<span class="px-wrap"><svg class="px-bot" viewBox="0 0 28 30" shape-rendering="crispEdges" aria-hidden="true"><g>'+body+'</g><g class="px-arm">'+arm+'</g></svg></span>';
   })();
   var wrap = fab.querySelector('.px-wrap');
+
+  /* ---- owner mode ----
+     If this browser already holds a dashboard session (you, signed in),
+     the robot gets his full powers here too: real commands, real tools,
+     streamed thinking. Anonymous visitors only ever reach the sales agent —
+     the server's auth gate decides, not this page. */
+  var owner = false;
+  var STEP_LABELS = {
+    ingest_website:"Reading the website", get_business_profile:"Checking the business profile",
+    get_knowledge:"Checking the knowledge base", create_post:"Writing content",
+    schedule_post:"Scheduling it", list_scheduled_posts:"Checking the calendar",
+    update_post:"Updating a post", create_lead:"Saving the lead", book_appointment:"Booking",
+    add_task:"Adding the task", list_automations:"Checking automations",
+    create_automation:"Building the automation", list_automation_options:"Checking what's possible",
+    test_automation:"Test-firing it", get_website:"Checking your website",
+    get_website_html:"Reading your website", build_website:"Building your website",
+    edit_website:"Editing your website"
+  };
+  fetch(AGENT_URL+'/api/auth/me',{credentials:'include'}).then(function(r){
+    if(r.ok){owner=true;
+      var head=document.querySelector('.hw-head');
+      if(head)head.firstChild.textContent='Ask HarperLinks ';
+      var tag=document.createElement('span');tag.className='hw-owner';tag.textContent='OWNER';
+      head.insertBefore(tag,head.querySelector('#hwClose'));
+    }
+  }).catch(function(){});
+
+  function sseStream(path, body, onEvent){
+    return fetch(AGENT_URL+path,{method:'POST',credentials:'include',
+      headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
+    }).then(function(r){
+      if(!r.ok||!r.body)throw new Error('request failed');
+      var reader=r.body.getReader(),dec=new TextDecoder(),buf='';
+      function pump(){return reader.read().then(function(res){
+        if(res.done)return;
+        buf+=dec.decode(res.value,{stream:true});
+        var parts=buf.split('\n\n');buf=parts.pop();
+        parts.forEach(function(ch){
+          var line=ch.split('\n').filter(function(l){return l.indexOf('data:')===0;})[0];
+          if(!line)return;
+          try{onEvent(JSON.parse(line.slice(5).trim()));}catch(e){}
+        });
+        return pump();});}
+      return pump();
+    });
+  }
 
   /* ---- visitor id ---- */
   var vid;
@@ -1129,7 +1191,9 @@
     if(opening){
       if(fab.style.left)place(fab.offsetLeft,fab.offsetTop);
       panel.classList.add('open');fab.classList.add('active');
-      if(!greeted){greeted=true;add('bot',"G'day! Ask me anything about HarperLinks — pricing, what your AI team can do, or how the 7-day setup works.");}
+      if(!greeted){greeted=true;add('bot',owner
+        ?"G'day boss. Full powers here — tell me what to do: write posts, build automations, change the website, set reminders."
+        :"G'day! Ask me anything about HarperLinks — pricing, what your AI team can do, or how the 7-day setup works.");}
       setTimeout(function(){input.focus();},180);
     }else{
       panel.classList.remove('open');fab.classList.remove('active');
@@ -1144,6 +1208,39 @@
     var text=input.value.trim();
     if(!text||busy)return;
     busy=true;add('user',text);input.value='';
+
+    if(owner){
+      // full assistant: live thinking, real tools, honest step reporting
+      var box=document.createElement('div');box.className='hw-think';
+      box.innerHTML='<div class="hw-th"><i></i><i></i><i></i><span class="hw-tl">Thinking…</span></div><div class="hw-steps"></div>';
+      msgs.appendChild(box);msgs.scrollTop=msgs.scrollHeight;
+      var stepsEl=box.querySelector('.hw-steps'),tl=box.querySelector('.hw-tl');
+      var waiting={},done=0,settled=false;
+      function lab(t){return STEP_LABELS[t]||t.replace(/_/g,' ');}
+      function finish(msg){settled=true;box.classList.add('settled');
+        var d=box.querySelectorAll('.hw-th i');d.forEach(function(x){x.remove();});
+        tl.textContent=done?('Did '+done+' step'+(done>1?'s':'')):'Thought it through';
+        if(msg)add('bot',msg);busy=false;input.focus();}
+      sseStream('/api/chat/stream',{sessionId:'site-'+vid,message:text},function(ev){
+        if(ev.phase==='model')tl.textContent='Thinking…';
+        else if(ev.phase==='tool-start'){tl.textContent='Working…';
+          var r=document.createElement('div');r.className='hw-step pending';
+          r.innerHTML='<span class="hw-spin"></span><span>'+lab(ev.tool)+'</span>';
+          stepsEl.appendChild(r);(waiting[ev.tool]=waiting[ev.tool]||[]).push(r);
+          msgs.scrollTop=msgs.scrollHeight;}
+        else if(ev.phase==='step'){var r2=(waiting[ev.tool]||[]).shift();
+          if(!r2){r2=document.createElement('div');stepsEl.appendChild(r2);}
+          r2.className='hw-step';
+          r2.innerHTML=(ev.ok?'<span class="ok">✓</span>':'<span class="bad">!</span>')+'<span>'+lab(ev.tool)+'</span>';
+          done++;msgs.scrollTop=msgs.scrollHeight;}
+        else if(ev.phase==='done')finish(ev.reply||'Done.');
+        else if(ev.phase==='error')finish(ev.error);
+      }).then(function(){if(!settled)finish('The connection dropped mid-answer — try again.');})
+        .catch(function(){if(settled)return;box.remove();
+          add('bot','I lost my connection — give it another go in a moment.');busy=false;});
+      return;
+    }
+
     var wait=add('bot wait','Thinking…');
     fetch(AGENT_URL+'/api/public/ask',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({visitorId:vid,message:text})
