@@ -859,41 +859,77 @@
 </script>
 
 <!-- ======================= ASK HARPERLINKS (AI agent) =======================
-     A floating assistant that answers visitor questions — pricing, what the
-     product does, how the 7-day setup works. It talks to the HarperLinks
-     server's public sales endpoint; set AGENT_URL to wherever the dashboard
-     server lives. If the server can't be reached the bubble simply hides,
-     so the site never shows a broken chat. -->
+     The HarperLinks robot. He answers visitor questions through the server's
+     public sales endpoint, bobs while idle, waves on hover, hops when opened,
+     and you can drag him anywhere — or throw him. If the server can't be
+     reached he simply never appears, so the site never shows a broken chat. -->
 <style>
-  .hw-fab{position:fixed;right:22px;bottom:22px;z-index:1500;width:58px;height:58px;border-radius:50%;border:none;cursor:pointer;
-    background:linear-gradient(120deg,#0A84FF,#FF2D92);color:#fff;display:none;align-items:center;justify-content:center;
-    box-shadow:0 10px 34px rgba(10,109,216,.28);transition:transform .2s}
-  .hw-fab:hover{transform:translateY(-2px) scale(1.04)}
-  .hw-fab svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-  .hw-panel{position:fixed;right:22px;bottom:92px;z-index:1500;width:min(360px,calc(100vw - 32px));max-height:min(520px,70vh);
-    display:none;flex-direction:column;background:#101322;border:1px solid rgba(255,255,255,.12);border-radius:18px;overflow:hidden;
-    box-shadow:0 24px 70px rgba(0,0,0,.55)}
-  .hw-panel.open{display:flex}
-  .hw-head{padding:13px 16px;background:linear-gradient(100deg,rgba(10,132,255,.18),rgba(255,45,146,.14));
-    border-bottom:1px solid rgba(255,255,255,.08);font-weight:700;font-size:14.5px;color:#EDEFF5;display:flex;justify-content:space-between;align-items:center}
-  .hw-head button{background:none;border:none;color:#8A8F9C;font-size:19px;cursor:pointer;line-height:1}
+  .hw-fab{position:fixed;right:22px;bottom:22px;z-index:1500;width:58px;height:68px;border:none;background:none;padding:0;
+    cursor:grab;display:none;align-items:flex-end;justify-content:center;touch-action:none;
+    transition:transform .25s var(--ease-out)}
+  .hw-fab:hover{transform:translateY(-3px)}
+  .hw-fab.dragging{cursor:grabbing;transition:none}
+  .hw-fab .px-wrap{display:block;line-height:0}
+  .hw-fab .px-wrap.easeback{transition:transform .3s var(--ease-out)}
+  .hw-fab .px-bot{width:100%;height:auto;display:block;transform-origin:50% 90%;
+    filter:drop-shadow(1.2px 0 0 #1B2550) drop-shadow(-1.2px 0 0 #1B2550)
+           drop-shadow(0 1.2px 0 #1B2550) drop-shadow(0 -1.2px 0 #1B2550)
+           drop-shadow(0 10px 16px rgba(27,37,80,.25));
+    animation:hwBob 3.4s ease-in-out infinite}
+  @keyframes hwBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  .hw-fab::after{content:"";position:absolute;left:50%;bottom:-4px;width:38px;height:9px;border-radius:50%;
+    transform:translateX(-50%);background:rgba(27,37,80,.2);filter:blur(3px);z-index:-1;
+    animation:hwShadow 3.4s ease-in-out infinite}
+  @keyframes hwShadow{0%,100%{transform:translateX(-50%) scaleX(1);opacity:.8}50%{transform:translateX(-50%) scaleX(.78);opacity:.5}}
+  .hw-fab .px-u{animation:hwBlink 1.1s steps(1) infinite}
+  @keyframes hwBlink{0%,55%{opacity:1}56%,100%{opacity:0}}
+  .hw-fab:hover .px-bot{animation:hwBob 3.4s ease-in-out infinite, hwExcite .6s var(--ease-out)}
+  @keyframes hwExcite{0%{transform:scale(1,1)}30%{transform:scale(1.14,.84) rotate(-4deg)}60%{transform:scale(.92,1.1) rotate(3deg)}80%{transform:scale(1.05,.97)}100%{transform:scale(1,1)}}
+  .hw-fab:hover .px-c,.hw-fab:hover .px-u{filter:brightness(1.35) drop-shadow(0 0 1px #5FE9F7)}
+  .hw-fab .px-arm{transform-box:view-box;transform-origin:20px 18px}
+  .hw-fab:hover .px-arm{animation:hwWave .7s ease-in-out}
+  @keyframes hwWave{0%,100%{transform:rotate(0)}30%{transform:rotate(-24deg)}55%{transform:rotate(10deg)}75%{transform:rotate(-14deg)}}
+  .hw-fab.active .px-bot{animation:hwBob 3.4s ease-in-out infinite, hwHop .55s var(--ease-out)}
+  @keyframes hwHop{0%{transform:translateY(0) scale(1,1)}25%{transform:translateY(1px) scale(1.12,.82)}55%{transform:translateY(-12px) scale(.94,1.1)}80%{transform:translateY(1px) scale(1.06,.94)}100%{transform:translateY(0) scale(1,1)}}
+  .hw-fab.dragging .px-bot{animation:none;transform:rotate(-7deg) scale(1.12)}
+  .hw-fab.dragging::after{opacity:.25;transform:translateX(-50%) scaleX(.6)}
+  .hw-fab.flying{transition:none;will-change:transform}
+  .hw-fab.flying .px-wrap{will-change:transform}
+  .hw-fab.flying .px-bot{animation:none}
+  .hw-fab.flying::after{opacity:0}
+  .hw-fab.impact .px-bot{animation:hwSquash .18s var(--ease-out)}
+  @keyframes hwSquash{0%{transform:scale(1.32,.62)}60%{transform:scale(.9,1.12)}100%{transform:scale(1,1)}}
+  .hw-fab.dizzy .px-bot{animation:hwDizzy .65s var(--ease-out)}
+  @keyframes hwDizzy{0%{transform:rotate(9deg)}30%{transform:rotate(-7deg)}60%{transform:rotate(4deg)}100%{transform:rotate(0)}}
+
+  .hw-panel{position:fixed;z-index:1499;width:min(360px,calc(100vw - 32px));max-height:min(520px,70vh);
+    display:flex;flex-direction:column;background:#FFFFFF;border:1px solid rgba(14,17,22,.12);border-radius:18px;overflow:hidden;
+    box-shadow:0 28px 70px rgba(14,17,22,.18);
+    opacity:0;transform:translateY(14px) scale(.95);pointer-events:none;transform-origin:bottom right;
+    transition:opacity .26s var(--ease-out),transform .26s var(--ease-out)}
+  .hw-panel.flip{transform-origin:bottom left}
+  .hw-panel.open{opacity:1;transform:none;pointer-events:auto}
+  .hw-head{padding:13px 16px;background:linear-gradient(100deg,rgba(10,109,216,.08),rgba(216,27,114,.06));
+    border-bottom:1px solid rgba(14,17,22,.08);font-weight:700;font-size:14.5px;color:var(--text);display:flex;justify-content:space-between;align-items:center}
+  .hw-head button{background:none;border:none;color:var(--dim);font-size:19px;cursor:pointer;line-height:1}
+  .hw-head button:hover{color:var(--text)}
   .hw-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;min-height:180px}
-  .hw-m{max-width:85%;padding:9px 13px;border-radius:13px;font-size:13.5px;line-height:1.5;color:#EDEFF5;white-space:pre-wrap}
-  .hw-m.bot{align-self:flex-start;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-bottom-left-radius:5px}
-  .hw-m.user{align-self:flex-end;background:linear-gradient(120deg,#0A84FF,#3E6FF6);border-bottom-right-radius:5px}
-  .hw-m.wait{color:#8A8F9C;font-style:italic}
-  .hw-form{display:flex;gap:8px;padding:11px;border-top:1px solid rgba(255,255,255,.08)}
-  .hw-form input{flex:1;padding:10px 13px;border-radius:11px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);
-    color:#EDEFF5;font-size:13.5px;outline:none}
-  .hw-form input:focus{border-color:#0A84FF}
+  .hw-m{max-width:85%;padding:9px 13px;border-radius:13px;font-size:13.5px;line-height:1.5;color:var(--text);white-space:pre-wrap}
+  .hw-m.bot{align-self:flex-start;background:#F2F5F9;border:1px solid rgba(14,17,22,.07);border-bottom-left-radius:5px}
+  .hw-m.user{align-self:flex-end;color:#fff;background:linear-gradient(120deg,#0A6DD8,#3F57D6);border-bottom-right-radius:5px}
+  .hw-m.wait{color:var(--dim);font-style:italic}
+  .hw-form{display:flex;gap:8px;padding:11px;border-top:1px solid rgba(14,17,22,.08)}
+  .hw-form input{flex:1;padding:10px 13px;border-radius:11px;border:1px solid rgba(14,17,22,.14);background:#fff;
+    color:var(--text);font-size:13.5px;outline:none}
+  .hw-form input:focus{border-color:#0A6DD8;box-shadow:0 0 0 3px rgba(10,109,216,.1)}
   .hw-form button{padding:10px 15px;border:none;border-radius:11px;cursor:pointer;font-weight:700;color:#fff;
-    background:linear-gradient(120deg,#0A84FF,#FF2D92);font-size:13.5px}
-  @media(prefers-reduced-motion:reduce){.hw-fab{transition:none}}
+    background:linear-gradient(120deg,#0A6DD8,#D81B72);font-size:13.5px}
+  @media(prefers-reduced-motion:reduce){
+    .hw-fab,.hw-fab .px-bot,.hw-fab .px-arm,.hw-fab .px-u,.hw-fab::after,.hw-panel{animation:none!important;transition:none!important}
+  }
 </style>
 
-<button class="hw-fab" id="hwFab" aria-label="Chat with the HarperLinks assistant">
-  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-8 8H5l-2 2V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z"/></svg>
-</button>
+<button class="hw-fab" id="hwFab" aria-label="Chat with the HarperLinks assistant"></button>
 <div class="hw-panel" id="hwPanel" role="dialog" aria-label="HarperLinks assistant">
   <div class="hw-head">Ask HarperLinks <button id="hwClose" aria-label="Close chat">×</button></div>
   <div class="hw-msgs" id="hwMsgs"></div>
@@ -909,59 +945,212 @@
   /* Where the HarperLinks server lives. Local dev: the dashboard on :4700.
      After deploying, point this at the server's public address. */
   var AGENT_URL = "http://localhost:4700";
+  var POS_KEY = "hw-fab-pos";
 
   var fab = document.getElementById('hwFab'), panel = document.getElementById('hwPanel');
   var msgs = document.getElementById('hwMsgs'), form = document.getElementById('hwForm'), input = document.getElementById('hwInput');
 
-  // a stable anonymous id so the agent can follow the conversation
-  var vid;
-  try {
-    vid = localStorage.getItem('hw-vid');
-    if(!vid){ vid = 'v-' + Math.random().toString(36).slice(2,12); localStorage.setItem('hw-vid', vid); }
-  } catch(e){ vid = 'v-' + Math.random().toString(36).slice(2,12); }
+  /* ---- the robot, pixel by pixel (same little guy as the dashboard) ---- */
+  var ART = [
+    "..........BBBBBBBB..........",
+    "........BBBBBBBBBBBB........",
+    "....BLLBBBBBBBBBBBBBBBB.....",
+    "...BLBBBBBBBBBBBBBBBBBBB....",
+    ".BBBBBBBBBBBBBBBBBBBBBBBBB..",
+    "BLLBBBBBSSSSSSSSSSSSBBBBBBBB",
+    "BBBBBBBBSSCCSSSSSSSSBBBBBBBB",
+    "BBBBBBBBSSSCCSSSSSSSBBBBBBBB",
+    "BBBBBBBBSSSSCCSSSSSSBBBBBBBB",
+    "BBBBBBBBSSSCCSSSSSSSBBBBBBBB",
+    "BBBBBBBBSSCCSSSUUUSSBBBBBBBB",
+    "BBBBBBBBSSSSSSSSSSSSBBBBBBBB",
+    ".BBBBBBBBBBBBBBBBBBBBBBBBBB.",
+    ".BBBBBBBBBBBBBBBBBBBBBBBBBB.",
+    "..DDDDDDDDDDDDDDDDDDDDDDDD..",
+    "...DDDDDD..DDDDDD..DDDDDD...",
+    "............BBBB............",
+    "..........BBBBBBBB..........",
+    "......BBBBBBBBBBBBBBBB......",
+    ".....BBB.BBSSSSSSBB.BBB.....",
+    ".....BBB.BBSCCSCSBB.BBB.....",
+    ".....BBB.BBSSSSSSBB.BBB.....",
+    "......BB.BBBBBBBBBB.BB......",
+    ".........BBBBBBBBBB.........",
+    ".........BBBBBBBBBB.........",
+    ".........DBBBBBBBBD.........",
+    "..........BBB..BBB..........",
+    "..........BBB..BBB..........",
+    ".........BBBB..BBBB.........",
+    ".........DDDD..DDDD........."
+  ];
+  var INK = { B:"#4D7CF0", L:"#8FB2F8", D:"#3B5ED1", S:"#101831", C:"#5FE9F7", U:"#5FE9F7" };
+  (function(){
+    var body="", arm="";
+    ART.forEach(function(row,y){
+      for(var x=0;x<row.length;x++){
+        var ch=row[x]; if(ch===".")continue;
+        var cls = ch==="U" ? ' class="px-u"' : ch==="C" ? ' class="px-c"' : "";
+        var r='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+INK[ch]+'"'+cls+'/>';
+        if(y>=18&&y<=22&&x>=19)arm+=r; else body+=r;
+      }
+    });
+    fab.innerHTML='<span class="px-wrap"><svg class="px-bot" viewBox="0 0 28 30" shape-rendering="crispEdges" aria-hidden="true"><g>'+body+'</g><g class="px-arm">'+arm+'</g></svg></span>';
+  })();
+  var wrap = fab.querySelector('.px-wrap');
 
-  function add(kind, text){
-    var el = document.createElement('div');
-    el.className = 'hw-m ' + kind;
-    el.textContent = text;
-    msgs.appendChild(el);
-    msgs.scrollTop = msgs.scrollHeight;
-    return el;
+  /* ---- visitor id ---- */
+  var vid;
+  try{ vid=localStorage.getItem('hw-vid'); if(!vid){vid='v-'+Math.random().toString(36).slice(2,12);localStorage.setItem('hw-vid',vid);} }
+  catch(e){ vid='v-'+Math.random().toString(36).slice(2,12); }
+
+  function add(kind,text){
+    var el=document.createElement('div'); el.className='hw-m '+kind; el.textContent=text;
+    msgs.appendChild(el); msgs.scrollTop=msgs.scrollHeight; return el;
   }
 
-  // Only show the bubble if the assistant is actually reachable —
-  // a chat that can't answer is worse than no chat.
-  fetch(AGENT_URL + '/api/public/ask', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ visitorId: vid, message: '' })
-  }).then(function(r){ if(r.ok) fab.style.display = 'flex'; }).catch(function(){ /* stay hidden */ });
+  /* ---- position, drag, THROW (same physics as the dashboard robot) ---- */
+  function clamp(x,y){
+    var w=fab.offsetWidth||58,h=fab.offsetHeight||68;
+    return{x:Math.min(Math.max(8,x),Math.max(8,innerWidth-w-8)),y:Math.min(Math.max(8,y),Math.max(8,innerHeight-h-8))};
+  }
+  function place(x,y){
+    var p=clamp(x,y);
+    fab.style.left=p.x+'px';fab.style.top=p.y+'px';fab.style.right='auto';fab.style.bottom='auto';
+    var leftHalf=p.x<innerWidth/2;
+    panel.classList.toggle('flip',leftHalf);
+    var px=leftHalf?p.x:Math.max(8,p.x+fab.offsetWidth-panel.offsetWidth);
+    var below=p.y<innerHeight/2;
+    panel.style.left=Math.min(px,Math.max(8,innerWidth-panel.offsetWidth-8))+'px';
+    panel.style.right='auto';panel.style.bottom='auto';
+    panel.style.top=below?(p.y+fab.offsetHeight+12)+'px':Math.max(8,p.y-panel.offsetHeight-12)+'px';
+    return p;
+  }
+  var saved=null; try{saved=JSON.parse(localStorage.getItem(POS_KEY)||'null');}catch(e){}
 
-  var greeted = false;
-  fab.addEventListener('click', function(){
-    panel.classList.toggle('open');
-    if(panel.classList.contains('open')){
-      if(!greeted){ add('bot', "G'day! Ask me anything about HarperLinks — pricing, what your AI team can do, or how the 7-day setup works."); greeted = true; }
-      input.focus();
+  var drag=null, flight=null;
+  var calmMotion=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function savePos(){var p=clamp(fab.offsetLeft,fab.offsetTop);try{localStorage.setItem(POS_KEY,JSON.stringify(p));}catch(e){}}
+  function impact(){fab.classList.remove('impact');void fab.offsetWidth;fab.classList.add('impact');setTimeout(function(){fab.classList.remove('impact');},200);}
+  function commitAt(px,py){
+    fab.style.transition='none';
+    fab.style.left=px+'px';fab.style.top=py+'px';fab.style.transform='';
+    void fab.offsetWidth; fab.style.transition='';
+  }
+  function stopFlight(){
+    if(!flight)return;
+    cancelAnimationFrame(flight.raf);
+    commitAt(flight.px,flight.py);
+    flight=null;fab.classList.remove('flying');
+    wrap.classList.remove('easeback');wrap.style.transform='';
+  }
+  function settleFlight(){
+    var px=flight.px,py=flight.py;
+    cancelAnimationFrame(flight.raf);flight=null;
+    commitAt(px,py);fab.classList.remove('flying');
+    wrap.classList.add('easeback');wrap.style.transform='rotate(0deg)';
+    setTimeout(function(){
+      wrap.classList.remove('easeback');wrap.style.transform='';
+      fab.classList.add('dizzy');setTimeout(function(){fab.classList.remove('dizzy');},650);
+    },300);
+    place(px,py);savePos();
+  }
+  function startThrow(vx,vy){
+    if(panel.classList.contains('open')){panel.classList.remove('open');fab.classList.remove('active');}
+    fab.classList.add('flying');
+    var ox=fab.offsetLeft,oy=fab.offsetTop,px=ox,py=oy,rot=0;
+    var G=2600,BOUNCE=.55,DRAG=.1,started=performance.now(),last=started;
+    var sp=Math.hypot(vx,vy),MAX=3200; if(sp>MAX){vx*=MAX/sp;vy*=MAX/sp;}
+    function frame(now){
+      var dt=Math.min(.03,(now-last)/1000);last=now;
+      var w=fab.offsetWidth,h=fab.offsetHeight;
+      var minX=8,maxX=innerWidth-w-8,minY=8,floorY=innerHeight-h-8;
+      vy+=G*dt;vx*=Math.max(0,1-DRAG*dt);px+=vx*dt;py+=vy*dt;
+      if(px<minX){px=minX;vx=-vx*BOUNCE;impact();}
+      if(px>maxX){px=maxX;vx=-vx*BOUNCE;impact();}
+      if(py<minY){py=minY;vy=-vy*BOUNCE;impact();}
+      var onFloor=false;
+      if(py>=floorY){py=floorY;onFloor=true;
+        if(vy>180){vy=-vy*BOUNCE;vx*=.85;impact();}else{vy=0;}
+        vx*=Math.max(0,1-5*dt);}
+      rot+=vx*dt*.3;
+      flight.px=px;flight.py=py;
+      fab.style.transform='translate3d('+(px-ox)+'px,'+(py-oy)+'px,0)';
+      wrap.style.transform='rotate('+rot.toFixed(2)+'deg)';
+      if((onFloor&&vy===0&&Math.abs(vx)<24)||now-started>7000){settleFlight();return;}
+      flight.raf=requestAnimationFrame(frame);
     }
-  });
-  document.getElementById('hwClose').addEventListener('click', function(){ panel.classList.remove('open'); });
+    flight={raf:requestAnimationFrame(frame),px:px,py:py};
+  }
 
-  var busy = false;
-  form.addEventListener('submit', function(e){
+  fab.addEventListener('pointerdown',function(ev){
+    var caught=!!flight; stopFlight();
+    drag={dx:ev.clientX-fab.offsetLeft,dy:ev.clientY-fab.offsetTop,moved:caught,trail:[]};
+    fab.setPointerCapture(ev.pointerId);fab.classList.add('dragging');
+  });
+  fab.addEventListener('pointermove',function(ev){
+    if(!drag)return;
+    var nx=ev.clientX-drag.dx,ny=ev.clientY-drag.dy;
+    if(Math.abs(nx-fab.offsetLeft)>2||Math.abs(ny-fab.offsetTop)>2)drag.moved=true;
+    drag.trail.push({x:nx,y:ny,t:performance.now()});
+    if(drag.trail.length>8)drag.trail.shift();
+    place(nx,ny);
+  });
+  function endDrag(ev){
+    if(!drag)return;
+    fab.classList.remove('dragging');
+    try{fab.releasePointerCapture(ev.pointerId);}catch(e){}
+    var vx=0,vy=0,trail=drag.trail,now=performance.now(),old=null;
+    for(var i=0;i<trail.length;i++){if(now-trail[i].t<=110){old=trail[i];break;}}
+    var cur=trail[trail.length-1];
+    if(old&&cur&&cur.t>old.t){vx=(cur.x-old.x)/(cur.t-old.t)*1000;vy=(cur.y-old.y)/(cur.t-old.t)*1000;}
+    var wasDrag=drag.moved;drag=null;
+    if(!wasDrag){savePos();toggle();return;}
+    if(!calmMotion&&Math.hypot(vx,vy)>620){startThrow(vx,vy);return;}
+    savePos();
+  }
+  fab.addEventListener('pointerup',endDrag);
+  fab.addEventListener('pointercancel',endDrag);
+  document.addEventListener('visibilitychange',function(){if(document.hidden&&flight)settleFlight();});
+  addEventListener('resize',function(){if(!flight&&fab.style.display!=='none'&&fab.style.left)place(fab.offsetLeft,fab.offsetTop);});
+
+  /* ---- only appear if the assistant is actually reachable ---- */
+  fetch(AGENT_URL+'/api/public/ask',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({visitorId:vid,message:''})
+  }).then(function(r){
+    if(!r.ok)return;
+    fab.style.display='flex';
+    if(saved)place(saved.x,saved.y);
+  }).catch(function(){/* stay hidden */});
+
+  /* ---- open/close + chat ---- */
+  var greeted=false;
+  function toggle(){
+    var opening=!panel.classList.contains('open');
+    if(opening){
+      if(fab.style.left)place(fab.offsetLeft,fab.offsetTop);
+      panel.classList.add('open');fab.classList.add('active');
+      if(!greeted){greeted=true;add('bot',"G'day! Ask me anything about HarperLinks — pricing, what your AI team can do, or how the 7-day setup works.");}
+      setTimeout(function(){input.focus();},180);
+    }else{
+      panel.classList.remove('open');fab.classList.remove('active');
+    }
+  }
+  document.getElementById('hwClose').addEventListener('click',toggle);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&panel.classList.contains('open'))toggle();});
+
+  var busy=false;
+  form.addEventListener('submit',function(e){
     e.preventDefault();
-    var text = input.value.trim();
-    if(!text || busy) return;
-    busy = true;
-    add('user', text);
-    input.value = '';
-    var wait = add('bot wait', 'Thinking…');
-    fetch(AGENT_URL + '/api/public/ask', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ visitorId: vid, message: text })
-    }).then(function(r){ return r.json(); })
-      .then(function(d){ wait.remove(); add('bot', d.reply || d.error || "Hmm, try that again?"); })
-      .catch(function(){ wait.remove(); add('bot', "I lost my connection — give it another go in a moment."); })
-      .then(function(){ busy = false; input.focus(); });
+    var text=input.value.trim();
+    if(!text||busy)return;
+    busy=true;add('user',text);input.value='';
+    var wait=add('bot wait','Thinking…');
+    fetch(AGENT_URL+'/api/public/ask',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({visitorId:vid,message:text})
+    }).then(function(r){return r.json();})
+      .then(function(d){wait.remove();add('bot',d.reply||d.error||'Hmm, try that again?');})
+      .catch(function(){wait.remove();add('bot','I lost my connection — give it another go in a moment.');})
+      .then(function(){busy=false;input.focus();});
   });
 })();
 </script>
