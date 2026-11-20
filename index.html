@@ -418,6 +418,7 @@
       <a href="#faq">FAQ</a>
     </div>
     <div class="nav-right">
+      <a href="#" class="js-signin" style="display:none">Sign in</a>
       <a href="#launch" class="nav-cta">Get started</a>
       <button class="nav-toggle" id="navToggle" aria-label="Open menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
@@ -432,6 +433,7 @@
   <a href="#how">How it works</a>
   <a href="#pricing">Pricing</a>
   <a href="#faq">FAQ</a>
+  <a href="#" class="js-signin" style="display:none">Sign in</a>
   <a href="#launch" class="menu-cta">Get started</a>
 </div>
 
@@ -667,6 +669,7 @@
       <h4>Company</h4>
       <a href="#faq">FAQ</a>
       <a href="#launch">Get started</a>
+      <a href="#" class="js-signin" style="display:none">Sign in</a>
     </div>
   </div>
   <div class="foot-bottom">© 2026 HarperLinks. All rights reserved.</div>
@@ -682,6 +685,12 @@
                              https://api.leadconnectorhq.com/widget/booking/XXXX
      ==================================================================== */
   var CTA_URL = "";
+
+  /* Customer dashboard — where "Sign in" goes. Update when deployed. */
+  var DASHBOARD_URL = "http://localhost:4700";
+  if (DASHBOARD_URL) document.querySelectorAll('.js-signin').forEach(function(a){
+    a.href = DASHBOARD_URL; a.style.display = ''; a.target = '_blank'; a.rel = 'noopener';
+  });
 
   /* ====================== STRIPE PAYMENT LINKS ========================
      Create one Payment Link per plan in Stripe (Products → Payment links),
@@ -699,7 +708,16 @@
   (function(){
     document.querySelectorAll('a.price-cta[data-plan]').forEach(function(a){
       var url = (STRIPE_LINKS[a.dataset.plan] || "").trim();
-      if(!url) return; // stays pointing at #launch until a link is pasted
+      if(!url){
+        // no Stripe link yet — the button opens the assistant with the plan
+        // already typed in, so clicking it still goes somewhere useful
+        var names = {professional:"Professional (A$249/mo)", business:"Business (A$499/mo)", enterprise:"Enterprise (A$999/mo)"};
+        a.addEventListener('click', function(e){
+          e.preventDefault();
+          if(window.HLBot) HLBot.ask("I'm interested in the "+(names[a.dataset.plan]||a.dataset.plan)+" plan — what happens next?");
+        });
+        return;
+      }
       a.setAttribute('href', url);
       a.setAttribute('target','_blank');
       a.setAttribute('rel','noopener');
@@ -728,11 +746,16 @@
       });
     } else {
       // no destination set yet — a button inside the sign-up section would
-      // just scroll to itself, so hide that one rather than look broken
+      // just scroll to itself, so turn that one into "Chat with us" instead
       var sec = document.getElementById('launch');
       if(sec) sec.querySelectorAll('a[href="#launch"]').forEach(function(a){
-        var wrap = a.closest('.hero-ctas') || a;
-        wrap.style.display = 'none';
+        for(var i=0;i<a.childNodes.length;i++){
+          if(a.childNodes[i].nodeType===3 && a.childNodes[i].nodeValue.trim()){ a.childNodes[i].nodeValue="Chat with us "; break; }
+        }
+        a.addEventListener('click', function(e){
+          e.preventDefault();
+          if(window.HLBot) HLBot.ask("I'd like to get started with HarperLinks — what's the next step?");
+        });
       });
     }
   })();
@@ -886,7 +909,7 @@
   .hw-fab:hover .px-bot{animation:hwBob 3.4s ease-in-out infinite, hwExcite .6s var(--ease-out)}
   @keyframes hwExcite{0%{transform:scale(1,1)}30%{transform:scale(1.14,.84) rotate(-4deg)}60%{transform:scale(.92,1.1) rotate(3deg)}80%{transform:scale(1.05,.97)}100%{transform:scale(1,1)}}
   .hw-fab:hover .px-c,.hw-fab:hover .px-u{filter:brightness(1.35) drop-shadow(0 0 1px #5FE9F7)}
-  .hw-fab .px-arm{transform-box:view-box;transform-origin:20px 18px}
+  .hw-fab .px-arm{transform-box:view-box;transform-origin:21px 17px}
   .hw-fab:hover .px-arm{animation:hwWave .7s ease-in-out}
   @keyframes hwWave{0%,100%{transform:rotate(0)}30%{transform:rotate(-24deg)}55%{transform:rotate(10deg)}75%{transform:rotate(-14deg)}}
   .hw-fab.active .px-bot{animation:hwBob 3.4s ease-in-out infinite, hwHop .55s var(--ease-out)}
@@ -975,28 +998,26 @@
 
   /* ---- the robot, pixel by pixel (same little guy as the dashboard) ---- */
   var ART = [
-    "..........BBBBBBBB..........",
-    "........BBBBBBBBBBBB........",
-    "....BLLBBBBBBBBBBBBBBBB.....",
-    "...BLBBBBBBBBBBBBBBBBBBB....",
-    ".BBBBBBBBBBBBBBBBBBBBBBBBB..",
-    "BLLBBBBBSSSSSSSSSSSSBBBBBBBB",
-    "BBBBBBBBSSCCSSSSSSSSBBBBBBBB",
-    "BBBBBBBBSSSCCSSSSSSSBBBBBBBB",
-    "BBBBBBBBSSSSCCSSSSSSBBBBBBBB",
-    "BBBBBBBBSSSCCSSSSSSSBBBBBBBB",
-    "BBBBBBBBSSCCSSSUUUSSBBBBBBBB",
-    "BBBBBBBBSSSSSSSSSSSSBBBBBBBB",
-    ".BBBBBBBBBBBBBBBBBBBBBBBBBB.",
-    ".BBBBBBBBBBBBBBBBBBBBBBBBBB.",
-    "..DDDDDDDDDDDDDDDDDDDDDDDD..",
-    "...DDDDDD..DDDDDD..DDDDDD...",
+    "............PPPP............",
+    "............PPPP............",
+    ".............BB.............",
+    "....BBBBBBBBBBBBBBBBBBBB....",
+    "...BLLBBBBBBBBBBBBBBBBBBB...",
+    "..BLBBSSSSSSSSSSSSSSSSBBBB..",
+    "PPBBBBSSSCCSSSSSSSSSSSBBBBPP",
+    "PPBBBBSSSSCCSSSSSSSSSSBBBBPP",
+    "PPBBBBSSSSSCCSSSSSSSSSBBBBPP",
+    "PPBBBBSSSSCCSSSSSSSSSSBBBBPP",
+    "..BBBBSSSCCSSSSUUUSSSSBBBB..",
+    "..BBBBBBBBBBBBBBBBBBBBBBBB..",
+    "...BBBBBBBBBBBBBBBBBBBBBB...",
+    "....DDDDDDDDDDDDDDDDDDDD....",
     "............BBBB............",
-    "..........BBBBBBBB..........",
-    "......BBBBBBBBBBBBBBBB......",
-    ".....BBB.BBSSSSSSBB.BBB.....",
-    ".....BBB.BBSCCSCSBB.BBB.....",
-    ".....BBB.BBSSSSSSBB.BBB.....",
+    "........BBBBBBBBBBBB........",
+    ".....BBBBBBBBBBBBBBBBBB.....",
+    ".....BBB.BBBPPPPBBB.BBB.....",
+    ".....BBB.BBBPPPPBBB.BBB.....",
+    ".....BBB.BBBPPPPBBB.BBB.....",
     "......BB.BBBBBBBBBB.BB......",
     ".........BBBBBBBBBB.........",
     ".........BBBBBBBBBB.........",
@@ -1006,7 +1027,7 @@
     ".........BBBB..BBBB.........",
     ".........DDDD..DDDD........."
   ];
-  var INK = { B:"#4D7CF0", L:"#8FB2F8", D:"#3B5ED1", S:"#101831", C:"#5FE9F7", U:"#5FE9F7" };
+  var INK = { B:"#3E7BEA", L:"#82ACF6", D:"#2E5BC2", S:"#0E1430", C:"#5FE9F7", U:"#5FE9F7", P:"#E84393" };
   (function(){
     var body="", arm="", face="";
     ART.forEach(function(row,y){
@@ -1014,15 +1035,15 @@
         var ch=row[x]; if(ch===".")continue;
         var cls = ch==="U" ? ' class="px-u"' : ch==="C" ? ' class="px-c"' : "";
         var r='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+INK[ch]+'"'+cls+'/>';
-        if(y>=18&&y<=22&&x>=19)arm+=r;
+        if(y>=17&&y<=20&&x>=20)arm+=r;
         else if((ch==="C"||ch==="U")&&y<=11)face+=r;
         else body+=r;
       }
     });
     var hurt="";
-    [[6,10],[6,12],[7,11],[8,10],[8,12],[6,15],[6,17],[7,16],[8,15],[8,17],[10,12],[10,13],[10,14],[10,15]]
+    [[6,9],[6,11],[7,10],[8,9],[8,11],[6,14],[6,16],[7,15],[8,14],[8,16],[10,11],[10,12],[10,13],[10,14]]
       .forEach(function(c){hurt+='<rect x="'+c[1]+'" y="'+c[0]+'" width="1" height="1" fill="#FF6B81"/>';});
-    fab.innerHTML='<span class="px-wrap"><svg class="px-bot" viewBox="0 0 28 30" shape-rendering="crispEdges" aria-hidden="true"><g>'+body+'</g><g class="face-normal">'+face+'</g><g class="face-hurt">'+hurt+'</g><g class="px-arm">'+arm+'</g></svg></span>';
+    fab.innerHTML='<span class="px-wrap"><svg class="px-bot" viewBox="0 0 28 28" shape-rendering="crispEdges" aria-hidden="true"><g>'+body+'</g><g class="face-normal">'+face+'</g><g class="face-hurt">'+hurt+'</g><g class="px-arm">'+arm+'</g></svg></span>';
   })();
   var wrap = fab.querySelector('.px-wrap');
 
@@ -1269,6 +1290,14 @@
     }
   }
   document.getElementById('hwClose').addEventListener('click',toggle);
+  // lets the pricing + CTA buttons open the assistant with a question ready
+  window.HLBot = { ask: function(prefill){
+    if(!panel.classList.contains('open')) toggle();
+    if(prefill){
+      input.value = prefill;
+      setTimeout(function(){ input.focus(); input.setSelectionRange(input.value.length, input.value.length); }, 220);
+    }
+  }};
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&panel.classList.contains('open'))toggle();});
 
   var busy=false;
