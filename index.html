@@ -335,6 +335,25 @@
   .foot-col a{display:block;color:var(--muted);font-size:14.5px;padding:6px 0;transition:color .2s}
   .foot-col a:hover{color:var(--accent,#0A6DD8)}
 
+
+  /* ===== the AI team on the cards ===== */
+  .sidefeat[data-ai]{cursor:pointer}
+  .ai-face{position:relative;width:62px;height:62px;border-radius:19px;display:flex;align-items:center;justify-content:center;
+    background:#fff;border:1.5px solid var(--border);box-shadow:0 8px 22px rgba(14,17,22,.1);margin-bottom:18px;
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .3s}
+  .ai-face svg{width:44px;height:44px;display:block}
+  .sidefeat:hover .ai-face{transform:scale(1.1) rotate(-4deg);box-shadow:0 12px 30px rgba(14,17,22,.16)}
+  .ai-chat-hint{position:absolute;top:30px;right:28px;font-size:12.5px;font-weight:700;color:var(--accent,#0A6DD8);
+    opacity:0;transform:translateX(6px);transition:opacity .25s,transform .3s var(--ease-out);pointer-events:none}
+  .sidefeat:hover .ai-chat-hint{opacity:1;transform:none}
+  .hw-pav{width:34px;height:34px;flex:none;border-radius:10px;background:#fff;border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center}
+  .hw-pav svg{width:26px;height:26px;display:block}
+  .hw-pav:empty{display:none}
+  .hw-ptitle{flex:1;display:flex;flex-direction:column;line-height:1.25;min-width:0}
+  .hw-ptitle b{font-size:14.5px}
+  .hw-ptitle i{font-style:normal;font-size:11.5px;color:var(--muted)}
+  .hw-ptitle i:empty{display:none}
   /* ===== sign-up form ===== */
   .signup-card{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:12px;text-align:left;
     background:#FFFFFF;border:1px solid var(--border);border-radius:22px;padding:26px;
@@ -519,23 +538,27 @@
       <p>Content, enquiries, leads, bookings and reporting — each handled by a dedicated AI employee you switch on when you're ready.</p>
     </div>
     <div class="showcase-card reveal d1">
-      <div class="sidefeat">
-        <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-3.3A8.4 8.4 0 1 1 21 11.5z"/></svg></div>
+      <div class="sidefeat" data-ai="sage" role="button" tabindex="0" aria-label="Chat with Sage, the content AI">
+        <div class="ai-face" data-face="sage"></div>
+        <span class="ai-chat-hint">Chat with Sage →</span>
         <h3>Content on autopilot</h3>
         <p>Sage learns your voice from your website, writes your posts and hashtags, plans the week and runs the publishing calendar.</p>
       </div>
-      <div class="sidefeat">
-        <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></div>
+      <div class="sidefeat" data-ai="flynn" role="button" tabindex="0" aria-label="Chat with Flynn, the leads AI">
+        <div class="ai-face" data-face="flynn"></div>
+        <span class="ai-chat-hint">Chat with Flynn →</span>
         <h3>Leads that never slip</h3>
         <p>Flynn captures every enquiry into your CRM, scores it, drafts the follow-up and keeps the pipeline moving to Won.</p>
       </div>
-      <div class="sidefeat">
-        <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
+      <div class="sidefeat" data-ai="harper" role="button" tabindex="0" aria-label="Chat with Harper, the bookings AI">
+        <div class="ai-face" data-face="harper"></div>
+        <span class="ai-chat-hint">Chat with Harper →</span>
         <h3>Bookings, clash-checked</h3>
         <p>Appointments book straight into your calendar — the AI checks availability first, so double-bookings simply can't happen.</p>
       </div>
-      <div class="sidefeat">
-        <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg></div>
+      <div class="sidefeat" data-ai="darcy" role="button" tabindex="0" aria-label="Chat with Darcy, the automations AI">
+        <div class="ai-face" data-face="darcy"></div>
+        <span class="ai-chat-hint">Chat with Darcy →</span>
         <h3>Automations that run<span class="soon-tag">+ calls soon</span></h3>
         <p>When a lead lands, workflows fire: follow-ups created, outreach drafted, you notified. AI phone answering is next on the roadmap.</p>
       </div>
@@ -1038,7 +1061,9 @@
     transition:opacity .26s var(--ease-out),transform .26s var(--ease-out)}
   .hw-panel.flip{transform-origin:bottom left}
   .hw-panel.open{opacity:1;transform:none;pointer-events:auto}
-  .hw-head{padding:13px 16px;background:linear-gradient(100deg,rgba(10,109,216,.08),rgba(216,27,114,.06));
+  .hw-head{padding:11px 14px;display:flex;align-items:center;gap:10px;
+    background:linear-gradient(100deg,color-mix(in srgb,var(--hwa,#3E7BEA) 12%,#fff),rgba(216,27,114,.05));
+    border-bottom:2px solid color-mix(in srgb,var(--hwa,#3E7BEA) 35%,transparent);
     border-bottom:1px solid rgba(14,17,22,.08);font-weight:700;font-size:14.5px;color:var(--text);display:flex;justify-content:space-between;align-items:center}
   .hw-head button{background:none;border:none;color:var(--dim);font-size:19px;cursor:pointer;line-height:1}
   .hw-head button:hover{color:var(--text)}
@@ -1076,7 +1101,7 @@
 
 <button class="hw-fab" id="hwFab" aria-label="Chat with the HarperLinks assistant"></button>
 <div class="hw-panel" id="hwPanel" role="dialog" aria-label="HarperLinks assistant">
-  <div class="hw-head">Ask HarperLinks <button id="hwClose" aria-label="Close chat">×</button></div>
+  <div class="hw-head"><span class="hw-pav" id="hwPav" aria-hidden="true"></span><span class="hw-ptitle"><b id="hwTitle">Ask HarperLinks</b><i id="hwRole"></i></span><button id="hwClose" aria-label="Close chat">×</button></div>
   <div class="hw-msgs" id="hwMsgs"></div>
   <form class="hw-form" id="hwForm">
     <input id="hwInput" type="text" placeholder="What would you like to know?" maxlength="500" autocomplete="off" />
@@ -1094,6 +1119,26 @@
 
   var fab = document.getElementById('hwFab'), panel = document.getElementById('hwPanel');
   var msgs = document.getElementById('hwMsgs'), form = document.getElementById('hwForm'), input = document.getElementById('hwInput');
+
+  /* ---- the AI team: one pixel body, four coats of paint ---- */
+  var TEAM = {
+    general:{ name:"Ask HarperLinks", role:"the whole team", accent:"#3E7BEA",
+      pal:null, greet:null },
+    sage:{ name:"Sage", role:"Social Media Manager", accent:"#E84393",
+      pal:{B:"#E84393",L:"#F27DB8",D:"#BE2A72",P:"#3E7BEA"},
+      greet:"Hey! I'm Sage — I write posts, plan content weeks and run publishing calendars. Ask me anything about content, or paste your website and I'll pitch you post ideas in YOUR voice." },
+    flynn:{ name:"Flynn", role:"Sales & Leads", accent:"#F59E0B",
+      pal:{B:"#F59E0B",L:"#FBC55A",D:"#C57F07",P:"#E84393"},
+      greet:"G'day — Flynn. Leads, follow-ups, pipelines: my thing. Ask me why leads go cold, or share your website and I'll tell you where enquiries are probably slipping." },
+    harper:{ name:"Harper", role:"AI Receptionist", accent:"#14B8A6",
+      pal:{B:"#14B8A6",L:"#5BD6C6",D:"#0E8A7B",P:"#E84393"},
+      greet:"Hi, Harper here — bookings and the front desk are mine. Double-bookings, no-shows, after-hours enquiries… ask away, or show me your website and I'll sketch your booking flow." },
+    darcy:{ name:"Darcy", role:"Automations & Reports", accent:"#8B5CF6",
+      pal:{B:"#8B5CF6",L:"#B39BF8",D:"#6A3ED2",P:"#E84393"},
+      greet:"Darcy — I make things run themselves. \"When a lead lands, do X\" is my favourite sentence. Ask about automations, or share your site and I'll pick the 3 that'd save you most." },
+  };
+  var currentPersona = "general";
+  var greeted = {};
 
   /* ---- the robot, pixel by pixel (same little guy as the dashboard) ---- */
   var ART = [
@@ -1127,6 +1172,20 @@
     ".........DDDD..DDDD........."
   ];
   var INK = { B:"#3E7BEA", L:"#82ACF6", D:"#2E5BC2", S:"#0E1430", C:"#5FE9F7", U:"#5FE9F7", P:"#E84393" };
+  /* render the bot in any palette — the team cards reuse this */
+  function botPixels(pal){
+    var ink = Object.assign({}, INK, pal || {});
+    var out="";
+    ART.forEach(function(row,y){
+      for(var x=0;x<row.length;x++){
+        var ch=row[x]; if(ch===".")continue;
+        out+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+ink[ch]+'"/>';
+      }
+    });
+    return '<svg viewBox="0 0 28 28" shape-rendering="crispEdges" aria-hidden="true">'+out+'</svg>';
+  }
+  window.botPixels = botPixels;
+
   (function(){
     var body="", arm="", face="";
     ART.forEach(function(row,y){
@@ -1373,21 +1432,57 @@
     if(saved)place(saved.x,saved.y);
   }).catch(function(){/* stay hidden */});
 
-  /* ---- open/close + chat ---- */
-  var greeted=false;
+  /* ---- open/close + chat (persona-aware) ---- */
+  function themePanel(id){
+    var t=TEAM[id]||TEAM.general;
+    currentPersona=id;
+    panel.style.setProperty('--hwa', t.accent);
+    document.getElementById('hwTitle').textContent = id==='general' ? 'Ask HarperLinks' : t.name;
+    document.getElementById('hwRole').textContent = id==='general' ? '' : t.role;
+    document.getElementById('hwPav').innerHTML = botPixels(t.pal);
+  }
+  function greetIfNew(id){
+    if(greeted[id])return;
+    greeted[id]=true;
+    var t=TEAM[id]||TEAM.general;
+    add('bot', id==='general'
+      ? (owner
+        ? "G'day boss. Full powers here — tell me what to do: write posts, build automations, change the website, set reminders."
+        : "G'day! Ask me anything about HarperLinks — pricing, what your AI team can do, or how the 7-day setup works. Or tap one of the team cards above to talk to a specialist.")
+      : t.greet);
+  }
   function toggle(){
     var opening=!panel.classList.contains('open');
     if(opening){
       if(fab.style.left)place(fab.offsetLeft,fab.offsetTop);
+      currentPersona='general';
+      themePanel(currentPersona);
       panel.classList.add('open');fab.classList.add('active');
-      if(!greeted){greeted=true;add('bot',owner
-        ?"G'day boss. Full powers here — tell me what to do: write posts, build automations, change the website, set reminders."
-        :"G'day! Ask me anything about HarperLinks — pricing, what your AI team can do, or how the 7-day setup works.");}
+      greetIfNew(currentPersona);
       setTimeout(function(){input.focus();},180);
     }else{
       panel.classList.remove('open');fab.classList.remove('active');
     }
   }
+  // the floating robot always opens the generalist
+  function openPersona(id){
+    themePanel(id);
+    if(!panel.classList.contains('open')){panel.classList.add('open');fab.classList.add('active');}
+    greetIfNew(id);
+    setTimeout(function(){input.focus();},180);
+  }
+
+  /* team cards: paint the faces, wire the clicks */
+  document.querySelectorAll('.ai-face').forEach(function(el){
+    var t=TEAM[el.dataset.face];
+    if(t)el.innerHTML=botPixels(t.pal);
+  });
+  document.querySelectorAll('.sidefeat[data-ai]').forEach(function(card){
+    function go(){ openPersona(card.dataset.ai); }
+    card.addEventListener('click',go);
+    card.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();go();} });
+  });
+
   document.getElementById('hwClose').addEventListener('click',toggle);
   // lets the pricing + CTA buttons open the assistant with a question ready
   window.HLBot = { ask: function(prefill){
@@ -1440,7 +1535,7 @@
 
     var wait=add('bot wait','Thinking…');
     fetch(AGENT_URL+'/api/public/ask',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({visitorId:vid,message:text})
+      body:JSON.stringify({visitorId:vid,message:text,persona:currentPersona})
     }).then(function(r){return r.json();})
       .then(function(d){wait.remove();add('bot',d.reply||d.error||'Hmm, try that again?');})
       .catch(function(){wait.remove();add('bot','I lost my connection — give it another go in a moment.');})
