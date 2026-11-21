@@ -745,7 +745,7 @@
   var CTA_URL = "";
 
   /* Customer dashboard — where "Sign in" goes. Update when deployed. */
-  var DASHBOARD_URL = "http://localhost:4700";
+  var DASHBOARD_URL = "https://harperlinks-dashboard-production.up.railway.app";
   if (DASHBOARD_URL) document.querySelectorAll('.js-signin').forEach(function(a){
     a.href = DASHBOARD_URL; a.style.display = ''; a.target = '_blank'; a.rel = 'noopener';
   });
@@ -1089,7 +1089,7 @@
   "use strict";
   /* Where the HarperLinks server lives. Local dev: the dashboard on :4700.
      After deploying, point this at the server's public address. */
-  var AGENT_URL = "http://localhost:4700";
+  var AGENT_URL = "https://harperlinks-dashboard-production.up.railway.app";
   var POS_KEY = "hw-fab-pos";
 
   var fab = document.getElementById('hwFab'), panel = document.getElementById('hwPanel');
