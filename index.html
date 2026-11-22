@@ -1056,21 +1056,24 @@
     box-shadow:2.5px 2.5px 0 #1B2550;will-change:transform,opacity}
   @keyframes hwDizzy{0%{transform:rotate(9deg)}30%{transform:rotate(-7deg)}60%{transform:rotate(4deg)}100%{transform:rotate(0)}}
 
-  .hw-panel{position:fixed;z-index:1499;width:min(360px,calc(100vw - 32px));max-height:min(520px,70vh);
+  .hw-panel{position:fixed;z-index:1499;width:min(360px,calc(100vw - 32px));max-height:min(520px,calc(100vh - 16px));
     display:flex;flex-direction:column;background:#FFFFFF;border:1px solid rgba(14,17,22,.12);border-radius:18px;overflow:hidden;
-    box-shadow:0 28px 70px rgba(14,17,22,.18);
+    box-shadow:0 18px 44px rgba(14,17,22,.16);will-change:transform,opacity;
     opacity:0;transform:translateY(14px) scale(.95);pointer-events:none;transform-origin:bottom right;
     transition:opacity .26s var(--ease-out),transform .26s var(--ease-out)}
   .hw-panel.flip{transform-origin:bottom left}
   .hw-panel.open{opacity:1;transform:none;pointer-events:auto}
   .hw-head{padding:11px 14px;display:flex;align-items:center;gap:10px;
     background:linear-gradient(100deg,color-mix(in srgb,var(--hwa,#3E7BEA) 12%,#fff),rgba(216,27,114,.05));
-    border-bottom:2px solid color-mix(in srgb,var(--hwa,#3E7BEA) 35%,transparent);
-    border-bottom:1px solid rgba(14,17,22,.08);font-weight:700;font-size:14.5px;color:var(--text);display:flex;justify-content:space-between;align-items:center}
+    border-bottom:2px solid color-mix(in srgb,var(--hwa,#3E7BEA) 35%,rgba(14,17,22,.08));
+    font-weight:700;font-size:14.5px;color:var(--text)}
   .hw-head button{background:none;border:none;color:var(--dim);font-size:19px;cursor:pointer;line-height:1}
   .hw-head button:hover{color:var(--text)}
-  .hw-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;min-height:180px}
-  .hw-m{max-width:85%;padding:9px 13px;border-radius:13px;font-size:13.5px;line-height:1.5;color:var(--text);white-space:pre-wrap}
+  .hw-msgs{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+    padding:14px;display:flex;flex-direction:column;gap:9px}
+  .hw-head,.hw-form{flex:0 0 auto}
+  .hw-m{max-width:85%;padding:9px 13px;border-radius:13px;font-size:13.5px;line-height:1.5;color:var(--text);
+    white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
   .hw-m.bot{align-self:flex-start;background:#F2F5F9;border:1px solid rgba(14,17,22,.07);border-bottom-left-radius:5px}
   .hw-m.user{align-self:flex-end;color:#fff;background:linear-gradient(120deg,#0A6DD8,#3F57D6);border-bottom-right-radius:5px}
   .hw-m.wait{color:var(--dim);font-style:italic}
@@ -1290,16 +1293,34 @@
     var w=fab.offsetWidth||58,h=fab.offsetHeight||68;
     return{x:Math.min(Math.max(8,x),Math.max(8,innerWidth-w-8)),y:Math.min(Math.max(8,y),Math.max(8,innerHeight-h-8))};
   }
+  /* Put the panel beside the robot, always fully on screen.
+     It picks whichever side has more room and is told how tall it may be,
+     so it can never hang off the bottom or the top. */
+  function placePanel(p){
+    var fw=fab.offsetWidth||58, fh=fab.offsetHeight||68, GAP=12, EDGE=8;
+    var leftHalf=p.x<innerWidth/2;
+    panel.classList.toggle('flip',leftHalf);
+    var pw=panel.offsetWidth||360;
+    var px=leftHalf?p.x:(p.x+fw-pw);
+    panel.style.left=Math.min(Math.max(EDGE,px),Math.max(EDGE,innerWidth-pw-EDGE))+'px';
+    panel.style.right='auto';panel.style.bottom='auto';
+
+    var roomBelow=innerHeight-(p.y+fh)-GAP-EDGE;
+    var roomAbove=p.y-GAP-EDGE;
+    var below=roomBelow>=roomAbove;
+    // tell the panel how much height it may use, then clamp its top edge
+    panel.style.maxHeight=Math.max(220,Math.min(520,below?roomBelow:roomAbove))+'px';
+    var ph=panel.offsetHeight||320;
+    var top=below?(p.y+fh+GAP):(p.y-ph-GAP);
+    panel.style.top=Math.min(Math.max(EDGE,top),Math.max(EDGE,innerHeight-ph-EDGE))+'px';
+  }
   function place(x,y){
     var p=clamp(x,y);
     fab.style.left=p.x+'px';fab.style.top=p.y+'px';fab.style.right='auto';fab.style.bottom='auto';
-    var leftHalf=p.x<innerWidth/2;
-    panel.classList.toggle('flip',leftHalf);
-    var px=leftHalf?p.x:Math.max(8,p.x+fab.offsetWidth-panel.offsetWidth);
-    var below=p.y<innerHeight/2;
-    panel.style.left=Math.min(px,Math.max(8,innerWidth-panel.offsetWidth-8))+'px';
-    panel.style.right='auto';panel.style.bottom='auto';
-    panel.style.top=below?(p.y+fab.offsetHeight+12)+'px':Math.max(8,p.y-panel.offsetHeight-12)+'px';
+    // Only measure/move the panel when it's actually open. Reading the
+    // panel's size forces the browser to re-layout, and doing that on every
+    // pointer move while dragging is exactly what made this feel sticky.
+    if(panel.classList.contains('open')) placePanel(p);
     return p;
   }
   var saved=null; try{saved=JSON.parse(localStorage.getItem(POS_KEY)||'null');}catch(e){}
@@ -1480,7 +1501,7 @@
   function toggle(){
     var opening=!panel.classList.contains('open');
     if(opening){
-      if(fab.style.left)place(fab.offsetLeft,fab.offsetTop);
+      placePanel(clamp(fab.offsetLeft,fab.offsetTop));
       currentPersona='general';
       themePanel(currentPersona);
       panel.classList.add('open');fab.classList.add('active');
@@ -1492,6 +1513,7 @@
   }
   // the floating robot always opens the generalist
   function openPersona(id){
+    placePanel(clamp(fab.offsetLeft,fab.offsetTop));
     themePanel(id);
     if(!panel.classList.contains('open')){panel.classList.add('open');fab.classList.add('active');}
     greetIfNew(id);
