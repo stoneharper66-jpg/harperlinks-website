@@ -347,6 +347,7 @@
   .ai-chat-hint{position:absolute;top:30px;right:28px;font-size:12.5px;font-weight:700;color:var(--accent,#0A6DD8);
     opacity:0;transform:translateX(6px);transition:opacity .25s,transform .3s var(--ease-out);pointer-events:none}
   .sidefeat:hover .ai-chat-hint{opacity:1;transform:none}
+  .hw-thread[hidden]{display:none}
   .hw-pav{width:34px;height:34px;flex:none;border-radius:10px;background:#fff;border:1px solid var(--border);
     display:flex;align-items:center;justify-content:center}
   .hw-pav svg{width:26px;height:26px;display:block}
@@ -1123,8 +1124,8 @@
 
   /* ---- the AI team: one pixel body, four coats of paint ---- */
   var TEAM = {
-    general:{ name:"Ask HarperLinks", role:"the whole team", accent:"#3E7BEA",
-      pal:null, greet:null },
+    general:{ name:"Ask HarperLinks", role:"the whole team", accent:"#5B4BE8",
+      pal:{B:"#5B4BE8",L:"#9A90F5",D:"#3E2FC7",P:"#E84393"}, greet:null },
     sage:{ name:"Sage", role:"Social Media Manager", accent:"#E84393",
       pal:{B:"#E84393",L:"#F27DB8",D:"#BE2A72",P:"#3E7BEA"},
       greet:"Hey! I'm Sage — I write posts, plan content weeks and run publishing calendars. Ask me anything about content, or paste your website and I'll pitch you post ideas in YOUR voice." },
@@ -1139,6 +1140,8 @@
       greet:"Darcy — I make things run themselves. \"When a lead lands, do X\" is my favourite sentence. Ask about automations, or share your site and I'll pick the 3 that'd save you most." },
   };
   var currentPersona = "general";
+  /* the movable assistant's own palette: HarperLinks indigo, not plain blue */
+  var FAB_INK = { B:"#5B4BE8", L:"#9A90F5", D:"#3E2FC7", P:"#E84393" };
   var greeted = {};
 
   /* ---- the robot, pixel by pixel (same little guy as the dashboard) ---- */
@@ -1193,7 +1196,7 @@
       for(var x=0;x<row.length;x++){
         var ch=row[x]; if(ch===".")continue;
         var cls = ch==="U" ? ' class="px-u"' : ch==="C" ? ' class="px-c"' : "";
-        var r='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+INK[ch]+'"'+cls+'/>';
+        var r='<rect x="'+x+'" y="'+y+'" width="1" height="1" data-k="'+ch+'" fill="'+(FAB_INK[ch]||INK[ch])+'"'+cls+'/>';
         if(y>=17&&y<=20&&x>=20)arm+=r;
         else if((ch==="C"||ch==="U")&&y<=11)face+=r;
         else body+=r;
@@ -1204,6 +1207,15 @@
       .forEach(function(c){hurt+='<rect x="'+c[1]+'" y="'+c[0]+'" width="1" height="1" fill="#FF6B81"/>';});
     fab.innerHTML='<span class="px-wrap"><svg class="px-bot" viewBox="0 0 28 28" shape-rendering="crispEdges" aria-hidden="true"><g>'+body+'</g><g class="face-normal">'+face+'</g><g class="face-hurt">'+hurt+'</g><g class="px-arm">'+arm+'</g></svg></span>';
   })();
+  /* the floating guy wears the brand by default, and takes on whichever
+     employee is open so you always know who you're talking to */
+  function paintFab(pal){
+    var ink=Object.assign({},INK,FAB_INK,pal||{});
+    fab.querySelectorAll('svg rect').forEach(function(r){
+      var k=r.getAttribute('data-k');
+      if(k && ink[k]) r.setAttribute('fill', ink[k]);
+    });
+  }
   var wrap = fab.querySelector('.px-wrap');
 
   /* ---- owner mode ----
@@ -1257,9 +1269,20 @@
   try{ vid=localStorage.getItem('hw-vid'); if(!vid){vid='v-'+Math.random().toString(36).slice(2,12);localStorage.setItem('hw-vid',vid);} }
   catch(e){ vid='v-'+Math.random().toString(36).slice(2,12); }
 
+  /* every persona keeps its own thread — switching AI switches conversation,
+     it never dumps a second employee's chat into the first one's panel */
+  function thread(id){
+    var t=msgs.querySelector('.hw-thread[data-p="'+id+'"]');
+    if(!t){ t=document.createElement('div'); t.className='hw-thread'; t.dataset.p=id; msgs.appendChild(t); }
+    return t;
+  }
+  function showThread(id){
+    msgs.querySelectorAll('.hw-thread').forEach(function(t){ t.hidden = t.dataset.p!==id; });
+    thread(id); msgs.scrollTop=msgs.scrollHeight;
+  }
   function add(kind,text){
     var el=document.createElement('div'); el.className='hw-m '+kind; el.textContent=text;
-    msgs.appendChild(el); msgs.scrollTop=msgs.scrollHeight; return el;
+    thread(currentPersona).appendChild(el); msgs.scrollTop=msgs.scrollHeight; return el;
   }
 
   /* ---- position, drag, THROW (same physics as the dashboard robot) ---- */
@@ -1437,6 +1460,8 @@
   function themePanel(id){
     var t=TEAM[id]||TEAM.general;
     currentPersona=id;
+    showThread(id);
+    paintFab(t.pal);
     panel.style.setProperty('--hwa', t.accent);
     document.getElementById('hwTitle').textContent = id==='general' ? 'Ask HarperLinks' : t.name;
     document.getElementById('hwRole').textContent = id==='general' ? '' : t.role;
