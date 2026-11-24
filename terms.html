@@ -3,14 +3,18 @@
 <head>
 <meta charset="utf-8" />
 <title>Terms of Service — HarperLinks</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="description" content="The HarperLinks terms of service — short and in plain English." />
 <meta name="robots" content="noindex" />
 <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png" />
 <style>
   :root{--text:#0E1116;--muted:#55606E;--border:rgba(14,17,22,.1);--accent:#0A6DD8}
   *{box-sizing:border-box;margin:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:#fff;color:var(--text);line-height:1.7;padding:48px 24px 80px}
+  html{background-color:#fff}
+  /* Netlify free-plan injected badge (not in source, added by /.netlify/scripts/hud) */
+  #nl-badge-frame,[id^="nl-badge"]{display:none!important}
+  body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:#fff;color:var(--text);line-height:1.7;
+    padding:calc(48px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right)) calc(80px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left))}
   main{max-width:680px;margin:0 auto}
   a{color:var(--accent);text-decoration:none}
   a:hover{text-decoration:underline}

@@ -16,9 +16,13 @@
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;min-height:100%}
+  html{background-color:var(--dark);overscroll-behavior-y:none}
+  /* Netlify free-plan injected badge (not in source, added by /.netlify/scripts/hud) */
+  #nl-badge-frame,[id^="nl-badge"]{display:none!important}
   body{background:var(--dark);color:var(--dtext);font-family:var(--body);line-height:1.6;
     -webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center;
-    min-height:100vh;padding:28px;text-align:center;position:relative;overflow:hidden}
+    min-height:100vh;text-align:center;position:relative;overflow:hidden;
+    padding:calc(28px + env(safe-area-inset-top)) calc(28px + env(safe-area-inset-right)) calc(28px + env(safe-area-inset-bottom)) calc(28px + env(safe-area-inset-left))}
   body::before{content:"";position:fixed;inset:0;pointer-events:none;
     background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.4px);background-size:22px 22px}
   body::after{content:"";position:fixed;inset:0;pointer-events:none;
