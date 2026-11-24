@@ -1,3 +1,8 @@
 User-agent: *
 Allow: /
 Disallow: /app
+
+# Internal build notes, not customer-facing — no secrets in them, but they
+# have no business showing up in search results for the business.
+Disallow: /ghl
+Disallow: /tools
