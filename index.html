@@ -205,6 +205,59 @@
     .pipe-node{flex-direction:row;align-items:center;gap:13px;padding:14px 16px}
     .pipe-node .pnum{display:none} .pipe-node .pico{flex:none} }
 
+
+  /* ===== pricing v2: four plans, credits, Launch Packs, top-ups ===== */
+  .price-grid.four{grid-template-columns:repeat(4,1fr);gap:14px;max-width:1160px}
+  .price-grid.four .price-card{padding:26px 22px}
+  .price-grid.four .price-amt b{font-size:34px}
+  .price-credits{font-family:var(--head);font-weight:650;font-size:14px;color:var(--accent);
+    background:var(--accent-tint,rgba(10,109,216,.07));border:1px solid rgba(10,109,216,.18);
+    border-radius:9px;padding:7px 11px;margin:2px 0 8px;text-align:center}
+  .price-credits b{font-size:15px}
+  .all-in{text-align:center;font-family:var(--head);font-weight:600;font-size:15px;color:var(--text);
+    margin:22px auto 0;padding:12px 18px;border-radius:99px;max-width:max-content;
+    background:linear-gradient(120deg,rgba(10,109,216,.08),rgba(216,27,114,.06));
+    border:1px solid rgba(10,109,216,.18)}
+
+  .credits-box,.packs,.topups{max-width:900px;margin:44px auto 0}
+  .credits-box h3,.packs h3,.topups h3{font-family:var(--head);font-size:21px;letter-spacing:-.015em;margin:0 0 6px;text-align:center}
+  .credits-lede{text-align:center;color:var(--dmuted);font-size:14.5px;margin:0 auto 20px;max-width:620px;line-height:1.6}
+  .credits-foot{text-align:center;color:var(--dmuted);font-size:13px;margin:16px 0 0}
+
+  .credits-table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--border);
+    border-radius:16px;overflow:hidden;font-size:14.5px}
+  .credits-table th{text-align:left;font-family:var(--head);font-weight:650;font-size:12px;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--dmuted);padding:12px 16px;
+    background:var(--ink-soft);border-bottom:1px solid var(--border)}
+  .credits-table th:last-child,.credits-table td:last-child{text-align:right}
+  .credits-table td{padding:11px 16px;border-bottom:1px solid rgba(14,17,22,.05)}
+  .credits-table tr:last-child td{border-bottom:none}
+  .credits-table td:last-child{font-family:var(--head);font-weight:650;color:var(--accent)}
+  .credits-table td:nth-child(2){color:var(--dmuted);font-size:13.5px}
+
+  .pack-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .pack{background:#fff;border:1px solid var(--border);border-radius:16px;padding:18px 20px}
+  .pack-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:7px}
+  .pack-top b{font-family:var(--head);font-size:15.5px}
+  .pack-top span{font-family:var(--head);font-weight:700;font-size:17px;color:var(--accent)}
+  .pack-top .pack-inc{font-size:13px;color:var(--ok,#17A673)}
+  .pack p{margin:0;font-size:13.5px;line-height:1.6;color:var(--dmuted)}
+
+  .topup-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .topup{background:#fff;border:1px solid var(--border);border-radius:16px;padding:18px;text-align:center}
+  .topup b{display:block;font-family:var(--head);font-size:25px;letter-spacing:-.02em}
+  .topup span{display:block;font-family:var(--head);font-weight:650;font-size:16px;color:var(--accent);margin:2px 0 4px}
+  .topup i{font-style:normal;font-size:12.5px;color:var(--dmuted)}
+
+  .soon-note{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.3)}
+  .faq-riley{text-align:center;color:var(--dmuted);font-size:14.5px;margin:26px auto 0;max-width:620px;line-height:1.6}
+
+  @media(max-width:1060px){ .price-grid.four{grid-template-columns:repeat(2,1fr);max-width:680px} }
+  @media(max-width:760px){ .pack-grid{grid-template-columns:1fr} .topup-grid{grid-template-columns:1fr} }
+  @media(max-width:620px){ .price-grid.four{grid-template-columns:1fr;max-width:400px}
+    .credits-table{font-size:13.5px} .credits-table th,.credits-table td{padding:9px 11px}
+    .credits-table td:nth-child(2){display:none} .credits-table th:nth-child(2){display:none} }
+
   /* ===== sections ===== */
   section{position:relative;z-index:2;padding:clamp(76px,10vw,112px) 0}
   .pill{display:inline-flex;align-items:center;padding:7px 17px;border:1px solid rgba(10,109,216,.28);border-radius:11px;background:rgba(10,109,216,.05);
@@ -557,8 +610,8 @@
   <div class="hero-glow2"></div>
   <div class="wrap">
     <span class="hero-logo-wrap"><img class="hero-logo reveal" src="assets/logo-alpha.png" alt="HarperLinks" width="900" height="600" /></span>
-    <h1 class="reveal d1">Your business,<br><span class="gr">on autopilot.</span></h1>
-    <p class="sub reveal d2">HarperLinks gives you a team of AI employees — they learn your business from your website, write your content, run your calendar, capture leads and book your appointments. You run the business; they run the busywork.</p>
+    <h1 class="reveal d1">Six AI Specialists<br><span class="gr">Who Know Your Business Inside Out.</span></h1>
+    <p class="sub reveal d2">Trained on your website, services and voice, they deliver content, follow-ups, bookings and support at the highest professional standard, around the clock.</p>
     <div class="hero-ctas reveal d3">
       <a class="hero-cta" href="#launch">Get started
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -680,57 +733,120 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="pill">Pricing</span>
-      <h2>Three plans. No surprises.</h2>
-      <p>Every plan starts with a <b>7-day free trial</b>. Pick the size of your AI team — founding members lock their price for life.</p>
+      <h2>Four plans. Every feature on all of them.</h2>
+      <p>Plans differ by how many AI credits you get, not by what you're allowed to use. Every plan starts with a <b>7-day free trial</b>, and founding members keep their price for life.</p>
     </div>
-    <div class="price-grid">
+    <div class="price-grid four">
       <div class="price-card reveal d1">
+        <div class="price-name">Starter</div>
+        <div class="price-for">For a one-person business getting started.</div>
+        <div class="price-amt"><b>A$99</b><span>/month</span></div>
+        <div class="price-credits"><b>1,000</b> credits a month</div>
+        <div class="price-sub">7 days free, then billed monthly · cancel anytime</div>
+        <ul class="price-list">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Weekly AI report</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Riley + email support</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Credits reset each month</li>
+        </ul>
+        <a class="price-cta" data-plan="starter" href="#launch">Start with Starter</a>
+      </div>
+      <div class="price-card reveal d2">
         <div class="price-name">Professional</div>
         <div class="price-for">For solo operators who want content and leads handled.</div>
         <div class="price-amt"><b>A$249</b><span>/month</span></div>
+        <div class="price-credits"><b>3,000</b> credits a month</div>
         <div class="price-sub">7 days free, then billed monthly · cancel anytime</div>
         <ul class="price-list">
-          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>2 AI employees (content + sales)</li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Website learning &amp; knowledge base</li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Content calendar &amp; scheduled publishing</li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>CRM with pipeline &amp; follow-ups</li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Clash-checked appointment calendar</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Daily AI report</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Unused credits roll over a month</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Email support</li>
         </ul>
         <a class="price-cta" data-plan="professional" href="#launch">Start with Professional</a>
       </div>
-      <div class="price-card featured reveal d2">
+      <div class="price-card featured reveal d3">
         <div class="price-badge">Most popular</div>
         <div class="price-name">Business</div>
         <div class="price-for">For teams that want the whole front office automated.</div>
         <div class="price-amt"><b>A$499</b><span>/month</span></div>
+        <div class="price-credits"><b>10,000</b> credits a month</div>
         <div class="price-sub">7 days free, then billed monthly · cancel anytime</div>
         <ul class="price-list">
-          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>All six AI employees</li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Automation workflows (when → do)</li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Branded image &amp; video generation</li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Daily AI business report</li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Analytics dashboard &amp; activity history</li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Everything in Professional</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Daily AI report</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Unused credits roll over a month</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>10% off every top-up</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Priority support</li>
         </ul>
         <a class="price-cta" data-plan="business" href="#launch">Start with Business</a>
       </div>
-      <div class="price-card reveal d3">
+      <div class="price-card reveal d4">
         <div class="price-name">Enterprise</div>
         <div class="price-for">For established businesses that want the lot, set up hands-on.</div>
         <div class="price-amt"><b>A$999</b><span>/month</span></div>
+        <div class="price-credits"><b>30,000</b> credits a month</div>
         <div class="price-sub">7 days free, then billed monthly · cancel anytime</div>
         <ul class="price-list">
-          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>AI website builder, security-scanned &amp; published</li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Custom workflows built for you by our team</li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Connect any tool via signed webhooks</li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Priority support, direct line to us</li>
-          <li class="is-soon"><svg class="pl-soon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>AI phone receptionist<span class="soon-pill">In development</span></li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Everything in Business</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Launch Pack included</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Credits roll over two months</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>20% off every top-up</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Custom workflows &amp; signed webhooks</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12l5 5L20 6"/></svg>Direct line to us</li>
         </ul>
         <a class="price-cta" data-plan="enterprise" href="#launch">Talk to us</a>
       </div>
     </div>
-    <div class="price-note reveal d3"><b>Done for you:</b> pay today and the HarperLinks team personally builds your account — brand voice, socials, the lot — and hands it over within 7 days. We’ll reach out on WhatsApp or email to get started.</div>
+    <div class="all-in reveal d3">All six AI specialists and every feature on every plan.</div>
+
+    <div class="credits-box reveal d2">
+      <h3>What do credits buy?</h3>
+      <p class="credits-lede">Every AI task uses a set number of credits. Most are small — it's video and a full website build that cost real money.</p>
+      <table class="credits-table">
+        <thead><tr><th scope="col">Task</th><th scope="col">Who does it</th><th scope="col">Credits</th></tr></thead>
+        <tbody>
+          <tr><td>Social post + hashtags</td><td>Sage</td><td>5</td></tr>
+          <tr><td>A week of content (7 posts)</td><td>Sage</td><td>30</td></tr>
+          <tr><td>Branded image</td><td>Sage</td><td>20</td></tr>
+          <tr><td>Short video, per 15 seconds</td><td>Sage</td><td>400</td></tr>
+          <tr><td>Lead captured &amp; scored</td><td>Flynn</td><td>1</td></tr>
+          <tr><td>Follow-up drafted</td><td>Flynn</td><td>3</td></tr>
+          <tr><td>Support reply</td><td>Riley</td><td>2</td></tr>
+          <tr><td>Clash-checked booking</td><td>Harper</td><td>2</td></tr>
+          <tr><td>Automation run</td><td>Darcy</td><td>2</td></tr>
+          <tr><td>Daily or weekly report</td><td>Darcy</td><td>10</td></tr>
+          <tr><td>Website edit + security scan</td><td>Indi</td><td>50–100</td></tr>
+          <tr><td>Full website build</td><td>Indi</td><td>1,500</td></tr>
+        </tbody>
+      </table>
+      <p class="credits-foot">A typical Starter month is around 800 credits. Professional about 1,500. Business about 6,000.</p>
+    </div>
+
+    <div class="packs reveal d3">
+      <h3>Launch Packs</h3>
+      <p class="credits-lede">The first month is the heavy one — reading your site, setting up your brand voice, rebuilding the site and writing your first round of posts. A Launch Pack covers that work, and the credits it uses don't touch your monthly allowance.</p>
+      <div class="pack-grid">
+        <div class="pack"><div class="pack-top"><b>Starter Launch</b><span>A$299</span></div>
+          <p>Business profile and brand voice · website refresh up to 5 pages, security-scanned · 2-week plan with 14 posts written and scheduled · socials connected · handover video</p></div>
+        <div class="pack"><div class="pack-top"><b>Professional Launch</b><span>A$449</span></div>
+          <p>Everything in Starter Launch · full website rebuild · 30-day plan with 30 posts and 10 branded images · CRM pipeline and booking calendar set up</p></div>
+        <div class="pack"><div class="pack-top"><b>Business Launch</b><span>A$699</span></div>
+          <p>Everything in Professional Launch · Riley's knowledge base loaded · 3 automation workflows · 2 short videos · 30-minute handover call</p></div>
+        <div class="pack"><div class="pack-top"><b>Enterprise</b><span class="pack-inc">Included</span></div>
+          <p>Everything in Business Launch plus custom workflows and signed webhooks, delivered within 7 days</p></div>
+      </div>
+      <p class="credits-foot">Already with us? Website rebuild A$349 · Social media kickstart A$149 · Brand voice refresh A$99</p>
+    </div>
+
+    <div class="topups reveal d3">
+      <h3>Need more credits?</h3>
+      <div class="topup-grid">
+        <div class="topup"><b>1,000</b><span>A$15</span><i>Quick refill</i></div>
+        <div class="topup"><b>5,000</b><span>A$59</span><i>Best for a video month</i></div>
+        <div class="topup"><b>15,000</b><span>A$149</span><i>Best value</i></div>
+      </div>
+      <p class="credits-foot">Business gets 10% off top-ups, Enterprise 20%. Top-up credits never expire while your plan is active.</p>
+    </div>
+
+    <div class="price-note reveal d3"><b>Getting set up:</b> the heavy first-month work is a one-off <a href="#pricing">Launch Pack</a>, included free on Enterprise. Your monthly credits stay for your own day-to-day work.</div>
+    <div class="price-note soon-note reveal d3"><b>Coming soon:</b> the AI phone receptionist. It's still in development, so it isn't part of any plan yet — we'll tell you the day it lands.</div>
   </div>
 </section>
 
@@ -764,11 +880,28 @@
         <div class="faq-a" id="faq-a-6" role="region" aria-labelledby="faq-q-6" aria-hidden="true"><div class="faq-a-inner"><p><b>Working now:</b> learning your business from your website, writing and scheduling social content, branded images and videos, your CRM and lead capture, clash-checked appointment booking, automation workflows, a built-and-published website, and your daily AI report.</p><p><b>In development:</b> the AI phone receptionist, SMS, email sending and social DMs. We mark these clearly everywhere rather than quietly implying they're live — if a feature isn't connected, your dashboard says so.</p></div></div>
       </div>
       <div class="faq-item">
+        <button class="faq-q" id="faq-q-credits" aria-expanded="false" aria-controls="faq-a-credits">What are credits?<span class="chev"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></span></button>
+        <div class="faq-a" id="faq-a-credits" role="region" aria-labelledby="faq-q-credits" aria-hidden="true"><div class="faq-a-inner"><p>Credits are how we meter the AI work. Every task uses a set number — a social post is 5, a lead captured is 1, a support reply is 2, a full website build is 1,500. Your plan includes a monthly allowance, and the dashboard shows exactly what's left and where it went.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" id="faq-q-runout" aria-expanded="false" aria-controls="faq-a-runout">What happens if I run out?<span class="chev"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></span></button>
+        <div class="faq-a" id="faq-a-runout" role="region" aria-labelledby="faq-q-runout" aria-hidden="true"><div class="faq-a-inner"><p>The important work keeps running. Lead capture, follow-ups, bookings and support replies carry on using a small emergency buffer, so you never lose an enquiry because of a number. Content, images, video and website edits pause until you top up — and we warn you before you get there, not after.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" id="faq-q-rollover" aria-expanded="false" aria-controls="faq-a-rollover">Do credits roll over?<span class="chev"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></span></button>
+        <div class="faq-a" id="faq-a-rollover" role="region" aria-labelledby="faq-q-rollover" aria-hidden="true"><div class="faq-a-inner"><p>On Professional and Business, unused credits stay for an extra month. On Enterprise, two. Starter resets each cycle. Credits you buy as a top-up never expire while your plan is active, and the oldest ones are always spent first.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" id="faq-q-launchpack" aria-expanded="false" aria-controls="faq-a-launchpack">What's a Launch Pack?<span class="chev"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></span></button>
+        <div class="faq-a" id="faq-a-launchpack" role="region" aria-labelledby="faq-q-launchpack" aria-hidden="true"><div class="faq-a-inner"><p>A one-off setup, done by us. The first month is the heavy one — reading your site, setting up your brand voice, rebuilding the site and writing your first round of posts. A Launch Pack covers that work, and the credits it uses don't touch your monthly allowance. It's included free on Enterprise.</p></div></div>
+      </div>
+      <div class="faq-item">
         <button class="faq-q" id="faq-q-5" aria-expanded="false" aria-controls="faq-a-5">Who builds HarperLinks?<span class="chev"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></span></button>
         <div class="faq-a" id="faq-a-5" role="region" aria-labelledby="faq-q-5" aria-hidden="true"><div class="faq-a-inner"><p>HarperLinks is a father-and-son build from Perth, Western Australia. We build it, we use it ourselves, and we answer our own support messages.</p></div></div>
       </div>
     </div>
   </div>
+  <p class="faq-riley">Still wondering something? <b>Chat to Riley</b>, our Customer Support specialist, using the chat bubble in the corner — he knows the plans, the credits and the Launch Packs inside out.</p>
 </section>
 
 <!-- ============================ FINAL CTA + FOOTER (dark) ============================ -->
@@ -870,7 +1003,12 @@
   var STRIPE_LINKS = {
     professional: "https://buy.stripe.com/28E8wJa4s1YRbb58mp0Fi00",   // A$249/mo · 7-day free trial
     business:     "https://buy.stripe.com/dRmdR36Sg6f7a71fOR0Fi01",   // A$499/mo · 7-day free trial
-    enterprise:   "https://buy.stripe.com/cNi5kx1xW46Z5QLgSV0Fi02",   // A$999/mo · 7-day free trial
+    // Deliberately EMPTY. "Talk to us" must open a conversation, not charge
+    // A$999 on the spot — the no-link fallback below does exactly that.
+    enterprise:   "",
+    // Starter has no payment link yet either, so it takes the same path
+    // rather than pointing at a button that goes nowhere.
+    starter:      "",
   };
   (function(){
     document.querySelectorAll('a.price-cta[data-plan]').forEach(function(a){
@@ -878,7 +1016,7 @@
       if(!url){
         // no Stripe link yet — the button opens the assistant with the plan
         // already typed in, so clicking it still goes somewhere useful
-        var names = {professional:"Professional (A$249/mo)", business:"Business (A$499/mo)", enterprise:"Enterprise (A$999/mo)"};
+        var names = {starter:"Starter (A$99/mo)", professional:"Professional (A$249/mo)", business:"Business (A$499/mo)", enterprise:"Enterprise (A$999/mo)"};
         a.addEventListener('click', function(e){
           e.preventDefault();
           if(window.HLBot) HLBot.ask("I'm interested in the "+(names[a.dataset.plan]||a.dataset.plan)+" plan — what happens next?");
