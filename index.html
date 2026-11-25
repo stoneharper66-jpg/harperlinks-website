@@ -1082,6 +1082,10 @@
   .px-bot .face-hurt{display:none}
   .px-bot.hurt .face-normal{display:none}
   .px-bot.hurt .face-hurt{display:block}
+  .hw-hint{position:absolute;bottom:76px;right:0;background:#1B2550;color:#fff;padding:8px 12px;border-radius:8px;
+    font-size:12px;white-space:nowrap;opacity:0;pointer-events:none;transform:translateX(8px);
+    transition:opacity .2s,transform .2s;z-index:1501;font-weight:600}
+  .hw-fab:hover .hw-hint{opacity:1;transform:translateX(0)}
   .px-say{position:fixed;left:0;top:0;z-index:1502;pointer-events:none;white-space:nowrap;
     font-family:var(--head);font-weight:800;font-size:11.5px;color:#1B2550;
     background:#FFFFFF;border:2px solid #1B2550;border-radius:10px;padding:4px 10px;
@@ -1131,6 +1135,10 @@
   @keyframes hwSpin{to{transform:rotate(360deg)}}
   .hw-owner{font-size:10.5px;font-weight:700;letter-spacing:.06em;color:#17A673;background:rgba(23,166,115,.1);
     border:1px solid rgba(23,166,115,.3);padding:3px 9px;border-radius:99px;margin-left:8px;vertical-align:1px}
+  #hwSound{background:none;border:none;cursor:pointer;font-size:14px;padding:6px 8px;margin-right:4px;
+    opacity:.7;transition:opacity .2s;border-radius:6px}
+  #hwSound:hover{opacity:1;background:rgba(0,0,0,.05)}
+  #hwSound.muted{opacity:.4}
   @media(prefers-reduced-motion:reduce){
     .hw-fab,.hw-fab .px-bot,.hw-fab .px-arm,.hw-fab .px-u,.hw-fab::after,.hw-panel{animation:none!important;transition:none!important}
   }
@@ -1138,7 +1146,7 @@
 
 <button class="hw-fab" id="hwFab" aria-label="Chat with the HarperLinks assistant"></button>
 <div class="hw-panel" id="hwPanel" role="dialog" aria-label="HarperLinks assistant">
-  <div class="hw-head"><span class="hw-pav" id="hwPav" aria-hidden="true"></span><span class="hw-ptitle"><b id="hwTitle">Ask HarperLinks</b><i id="hwRole"></i></span><button id="hwClose" aria-label="Close chat">×</button></div>
+  <div class="hw-head"><span class="hw-pav" id="hwPav" aria-hidden="true"></span><span class="hw-ptitle"><b id="hwTitle">Ask HarperLinks</b><i id="hwRole"></i></span><button id="hwSound" aria-label="Toggle sound" title="Toggle sound (s)">🔊</button><button id="hwClose" aria-label="Close chat">×</button></div>
   <div class="hw-msgs" id="hwMsgs"></div>
   <form class="hw-form" id="hwForm">
     <input id="hwInput" type="text" placeholder="What would you like to know?" maxlength="500" autocomplete="off" />
@@ -1246,7 +1254,7 @@
     var hurt="";
     [[6,9],[6,11],[7,10],[8,9],[8,11],[6,14],[6,16],[7,15],[8,14],[8,16],[10,11],[10,12],[10,13],[10,14]]
       .forEach(function(c){hurt+='<rect x="'+c[1]+'" y="'+c[0]+'" width="1" height="1" fill="#FF6B81"/>';});
-    fab.innerHTML='<span class="px-wrap"><svg class="px-bot" viewBox="0 0 28 28" shape-rendering="crispEdges" aria-hidden="true"><g>'+body+'</g><g class="face-normal">'+face+'</g><g class="face-hurt">'+hurt+'</g><g class="px-arm">'+arm+'</g></svg></span>';
+    fab.innerHTML='<span class="px-wrap"><svg class="px-bot" viewBox="0 0 28 28" shape-rendering="crispEdges" aria-hidden="true"><g>'+body+'</g><g class="face-normal">'+face+'</g><g class="face-hurt">'+hurt+'</g><g class="px-arm">'+arm+'</g></svg></span><div class="hw-hint">Drag • Click • Throw</div>';
   })();
   /* the floating guy wears the brand by default, and takes on whichever
      employee is open so you always know who you're talking to */
@@ -1391,18 +1399,28 @@
     },300);
     place(px,py);savePos();
   }
-  var LINES={throw_:["WHEEE!","aaaAAAH!","not again!!","I regret nothing!","airborne!!"],
+  var LINES={
+    throw_:["WHEEE!","aaaAAAH!","not again!!","I regret nothing!","airborne!!"],
     hit:["ow!","oof!","my pixels!!","bonk","ouch.","that's a wall!"],
     land:["...where am I?","I'm fine. totally fine.","rude.","again! again!","ow. just... ow."],
-    pickup:["hm?","where we going?","easy now…","wait wait wait—"]};
-  var lastSay=0;
+    pickup:["hm?","where we going?","easy now…","wait wait wait—"],
+    sage:{throw_:["Content incoming!","Plot twist time!","Viral material!"],hit:["Lost the narrative!","Edit needed!","Rewrite mode!"],land:["Post scheduled.","Draft mode.","Buffer filled."]},
+    flynn:{throw_:["Closing deals!","Pipeline moves!","Commission earned!"],hit:["Lead gone cold!","Prospect lost!","Pipeline leak!"],land:["CRM updated.","Follow-up set.","Opportunity tracked."]},
+    harper:{throw_:["Double-booked!","Calendar chaos!","Scheduling spree!"],hit:["Appointment missed!","No-show!","Calendar crash!"],land:["Booking confirmed.","Slot reserved.","Calendar synced."]},
+    riley:{throw_:["Customer questions!","Support mode!","Help incoming!"],hit:["Escalation needed!","Tricky one!","Human required!"],land:["Ticket resolved.","Question answered.","Issue closed."]},
+    indi:{throw_:["Redesign time!","CSS incoming!","Site update!"],hit:["HTML error!","Deploy failed!","Build broken!"],land:["Site live.","Deploy success.","Changes merged."]},
+    darcy:{throw_:["Automation firing!","Workflows running!","Tasks launching!"],hit:["Automation failed!","Trigger error!","Workflow stuck!"],land:["Automation complete.","Process finished.","Tasks done."]}
+  };
+  var lastSay=0, soundEnabled=true;
   function say(kind,force){
     var now=Date.now();
     if(!force&&now-lastSay<600)return;
     lastSay=now;
-    var pool=LINES[kind]||[];if(!pool.length)return;
+    var personaLines=LINES[currentPersona]||{},pool=personaLines[kind]||LINES[kind]||[];
+    if(!pool.length)return;
+    var text=pool[(Math.random()*pool.length)|0];
     var b=document.createElement('div');b.className='px-say';
-    b.textContent=pool[(Math.random()*pool.length)|0];
+    b.textContent=text;
     document.body.appendChild(b);
     var r=fab.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top-8;
     b.animate([
@@ -1411,6 +1429,18 @@
       {transform:'translate(-50%,-30px) translate('+cx+'px,'+cy+'px) scale(1)',opacity:1,offset:.75},
       {transform:'translate(-50%,-46px) translate('+cx+'px,'+cy+'px) scale(.92)',opacity:0}
     ],{duration:1150,easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish=function(){b.remove();};
+    if(soundEnabled)beep(kind);
+  }
+  function beep(kind){
+    try{
+      var ctx=new(window.AudioContext||window.webkitAudioContext)();
+      var osc=ctx.createOscillator(),gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.frequency.value=kind==='hit'?200:kind==='land'?300:800;
+      gain.gain.setValueAtTime(.15,ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.01,ctx.currentTime+.1);
+      osc.start(ctx.currentTime);osc.stop(ctx.currentTime+.1);
+    }catch(e){}
   }
   var botEl=null,hurtT=null;
   function hurtFace(ms){
@@ -1575,8 +1605,11 @@
     card.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();go();} });
   });
 
+  var soundBtn = document.getElementById('hwSound');
+  function updateSoundBtn(){soundBtn.textContent = soundEnabled ? '🔊' : '🔇'; soundBtn.classList.toggle('muted',!soundEnabled);}
+  updateSoundBtn();
+  soundBtn.addEventListener('click',function(){soundEnabled = !soundEnabled; updateSoundBtn(); beep(soundEnabled ? 'pickup' : 'land');});
   document.getElementById('hwClose').addEventListener('click',toggle);
-  // lets the pricing + CTA buttons open the assistant with a question ready
   window.HLBot = { ask: function(prefill){
     if(!panel.classList.contains('open')) toggle();
     if(prefill){
@@ -1584,7 +1617,14 @@
       setTimeout(function(){ input.focus(); input.setSelectionRange(input.value.length, input.value.length); }, 220);
     }
   }};
-  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&panel.classList.contains('open'))toggle();});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&panel.classList.contains('open')){toggle();return;}
+    if(e.key==='?'||e.key==='/'){e.preventDefault();alert('Keyboard shortcuts:\n\nSpace - Open chat\n1-6 - Switch to Sage, Flynn, Harper, Riley, Indi, Darcy\ns - Toggle sound effects\n\nMouse:\nDrag the buddy around\nThrow with momentum\nClick to open chat');}
+    if(e.key===' '&&!panel.classList.contains('open')&&fab.style.display!=='none'){e.preventDefault();toggle();}
+    var personaMap={1:'sage',2:'flynn',3:'harper',4:'riley',5:'indi',6:'darcy'};
+    if(personaMap[e.key]&&fab.style.display!=='none'){e.preventDefault();switchPersona(personaMap[e.key]);openPersona(personaMap[e.key]);}
+    if((e.key==='s'||e.key==='S')&&fab.style.display!=='none'){soundEnabled=!soundEnabled;say(soundEnabled?'pickup':'land',true);}
+  });
 
   var busy=false;
   form.addEventListener('submit',function(e){
