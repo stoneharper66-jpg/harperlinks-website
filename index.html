@@ -1327,29 +1327,29 @@
   }
 
   /* ---- position, drag, THROW (same physics as the dashboard robot) ---- */
+  var fabW=58,fabH=68;
   function clamp(x,y){
-    var w=fab.offsetWidth||58,h=fab.offsetHeight||68;
-    return{x:Math.min(Math.max(8,x),Math.max(8,innerWidth-w-8)),y:Math.min(Math.max(8,y),Math.max(8,innerHeight-h-8))};
+    return{x:Math.min(Math.max(8,x),Math.max(8,innerWidth-fabW-8)),y:Math.min(Math.max(8,y),Math.max(8,innerHeight-fabH-8))};
   }
   /* Put the panel beside the robot, always fully on screen.
      It picks whichever side has more room and is told how tall it may be,
      so it can never hang off the bottom or the top. */
   function placePanel(p){
-    var fw=fab.offsetWidth||58, fh=fab.offsetHeight||68, GAP=12, EDGE=8;
+    var GAP=12, EDGE=8;
     var leftHalf=p.x<innerWidth/2;
     panel.classList.toggle('flip',leftHalf);
     var pw=panel.offsetWidth||360;
-    var px=leftHalf?p.x:(p.x+fw-pw);
+    var px=leftHalf?p.x:(p.x+fabW-pw);
     panel.style.left=Math.min(Math.max(EDGE,px),Math.max(EDGE,innerWidth-pw-EDGE))+'px';
     panel.style.right='auto';panel.style.bottom='auto';
 
-    var roomBelow=innerHeight-(p.y+fh)-GAP-EDGE;
+    var roomBelow=innerHeight-(p.y+fabH)-GAP-EDGE;
     var roomAbove=p.y-GAP-EDGE;
     var below=roomBelow>=roomAbove;
     // tell the panel how much height it may use, then clamp its top edge
     panel.style.maxHeight=Math.max(220,Math.min(520,below?roomBelow:roomAbove))+'px';
     var ph=panel.offsetHeight||320;
-    var top=below?(p.y+fh+GAP):(p.y-ph-GAP);
+    var top=below?(p.y+fabH+GAP):(p.y-ph-GAP);
     panel.style.top=Math.min(Math.max(EDGE,top),Math.max(EDGE,innerHeight-ph-EDGE))+'px';
   }
   function place(x,y){
@@ -1504,7 +1504,7 @@
   fab.addEventListener('pointerup',endDrag);
   fab.addEventListener('pointercancel',endDrag);
   document.addEventListener('visibilitychange',function(){if(document.hidden&&flight)settleFlight();});
-  addEventListener('resize',function(){if(!flight&&fab.style.display!=='none'&&fab.style.left)place(fab.offsetLeft,fab.offsetTop);});
+  addEventListener('resize',function(){if(fab.style.display!=='none'){fabW=fab.offsetWidth||58;fabH=fab.offsetHeight||68;if(!flight&&fab.style.left)place(fab.offsetLeft,fab.offsetTop);}});
 
   /* ---- only appear if the assistant is actually reachable ---- */
   fetch(AGENT_URL+'/api/public/ask',{method:'POST',headers:{'Content-Type':'application/json'},
@@ -1512,6 +1512,7 @@
   }).then(function(r){
     if(!r.ok)return;
     fab.style.display='flex';
+    fabW=fab.offsetWidth||58;fabH=fab.offsetHeight||68;
     if(saved)place(saved.x,saved.y);
   }).catch(function(){/* stay hidden */});
 
@@ -1557,6 +1558,11 @@
     greetIfNew(id);
     setTimeout(function(){input.focus();},180);
   }
+  // switch persona without opening chat
+  function switchPersona(id){
+    themePanel(id);
+    greetIfNew(id);
+  }
 
   /* team cards: paint the faces, wire the clicks */
   document.querySelectorAll('.ai-face').forEach(function(el){
@@ -1564,7 +1570,7 @@
     if(t)el.innerHTML=botPixels(t.pal);
   });
   document.querySelectorAll('.sidefeat[data-ai]').forEach(function(card){
-    function go(){ openPersona(card.dataset.ai); }
+    function go(){ switchPersona(card.dataset.ai); }
     card.addEventListener('click',go);
     card.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();go();} });
   });
