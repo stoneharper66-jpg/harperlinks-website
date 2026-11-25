@@ -393,12 +393,13 @@
   .signup-done h3{font-family:var(--head);font-size:24px;margin:0 0 10px}
   .signup-done p{color:var(--muted);font-size:15.5px;line-height:1.6;max-width:40ch;margin:0 auto}
   /* ===== socials ===== */
-  @keyframes socIn{from{opacity:0;transform:translateY(14px) scale(.82)}to{opacity:1;transform:none}}
-  .socials{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+  @keyframes socIn{from{opacity:0;transform:translateY(16px) scale(.75) rotate(-8deg)}to{opacity:1;transform:none}}
+  .socials{display:flex;gap:16px;margin-top:28px;flex-wrap:wrap;justify-content:center}
   /* visible by default — the pop is a pure enhancement, never a prerequisite */
-  .soc{position:relative;width:46px;height:46px;border-radius:15px;display:inline-flex;align-items:center;justify-content:center;
-    border:1px solid rgba(14,17,22,.1);background:#FFFFFF;overflow:visible;
-    transition:transform .35s cubic-bezier(.34,1.56,.64,1),border-color .3s,box-shadow .35s}
+  .soc{position:relative;width:56px;height:56px;border-radius:18px;display:inline-flex;align-items:center;justify-content:center;
+    border:1px solid rgba(14,17,22,.08);background:#FFFFFF;overflow:visible;
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1),border-color .3s,box-shadow .35s;
+    box-shadow:0 4px 12px rgba(14,17,22,.08)}
   /* they pop in one-by-one once the footer scrolls into view */
   .socials.in .soc{animation:socIn .55s var(--ease-out) backwards}
   .socials.in .soc:nth-child(1){animation-delay:.04s}.socials.in .soc:nth-child(2){animation-delay:.1s}
@@ -407,25 +408,26 @@
   /* brand wash that floods in on hover */
   .soc::before{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--sfill);
     opacity:0;transform:scale(.6);transition:opacity .32s var(--ease-out),transform .42s cubic-bezier(.34,1.56,.64,1)}
-  .soc svg{position:relative;z-index:1;width:21px;height:21px;display:block;
+  .soc svg{position:relative;z-index:1;width:26px;height:26px;display:block;
     transition:transform .35s cubic-bezier(.34,1.56,.64,1),filter .3s}
-  .soc:hover{transform:translateY(-5px) scale(1.02);border-color:transparent;
-    box-shadow:0 14px 30px rgba(14,17,22,.16),0 0 26px var(--scg,rgba(10,132,255,.25))}
-  .soc:hover::before{opacity:1;transform:scale(1)}
+  .soc:hover{transform:translateY(-8px) scale(1.05) rotate(3deg);border-color:transparent;
+    box-shadow:0 20px 40px rgba(14,17,22,.2),0 0 32px var(--scg,rgba(10,132,255,.35))}
+  .soc:hover::before{opacity:1;transform:scale(1.08)}
   /* logo flips to solid white once the brand wash is behind it */
-  .soc:hover svg{transform:scale(1.07);filter:brightness(0) invert(1)}
+  .soc:hover svg{transform:scale(1.12);filter:brightness(0) invert(1)}
   /* YouTube is two shapes — keep the play triangle punched out in brand red */
   .soc[data-id="youtube"]:hover svg{filter:none}
   .soc[data-id="youtube"]:hover svg path:first-child{fill:#fff}
   .soc[data-id="youtube"]:hover svg path:last-child{fill:#E00000}
   /* name tooltip */
-  .soc span{position:absolute;bottom:calc(100% + 9px);left:50%;transform:translateX(-50%) translateY(4px);
-    padding:4px 10px;border-radius:8px;white-space:nowrap;pointer-events:none;
-    background:rgba(18,19,28,.95);border:1px solid rgba(255,255,255,.1);
-    font-family:var(--head);font-size:11px;font-weight:600;color:#fff;letter-spacing:.01em;
-    opacity:0;transition:opacity .22s,transform .28s var(--ease-out)}
+  .soc span{position:absolute;bottom:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(6px);
+    padding:6px 14px;border-radius:10px;white-space:nowrap;pointer-events:none;
+    background:rgba(14,17,22,.98);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px);
+    font-family:var(--head);font-size:12px;font-weight:600;color:#fff;letter-spacing:.01em;
+    opacity:0;transition:opacity .22s,transform .28s var(--ease-out);box-shadow:0 8px 24px rgba(14,17,22,.3)}
   .soc:hover span{opacity:1;transform:translateX(-50%) translateY(0)}
-  .soc[aria-disabled="true"]{cursor:default}
+  .soc[aria-disabled="true"]{cursor:default;opacity:.5}
+  .soc[aria-disabled="true"]:hover{transform:none;box-shadow:0 4px 12px rgba(14,17,22,.08)}
   .soc-note{font-size:11.5px;color:#5A5F72;margin-top:14px;letter-spacing:.01em}
   @media(prefers-reduced-motion:reduce){.socials.in .soc{animation:none}
     .soc,.soc::before,.soc svg,.soc span{transition:none}}
